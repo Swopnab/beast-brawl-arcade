@@ -1,6 +1,6 @@
-# BEAST BRAWL / ARCADE
+# BEAST BRAWL / 3D ARCADE
 
-**Five worlds. Thirty fighters. Your rules.** A separate, stage-first edition of Beast Brawl. An original, sprite-based arcade fighting game with 30 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
+**Five worlds. Thirty fighters. Your rules.** A separate, stage-first edition of Beast Brawl. An original 3D arcade fighting game with 30 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
 
 ## Play
 
@@ -15,7 +15,7 @@ The arcade character-select screen gives your fighter roughly half the desktop s
 - A synchronized **six-second survival guide** explains the controls before the first round. Subsequent rounds have three-second countdowns.
 - Use the **alibi lounge** for live room chat. Messages are visible only to room participants and are not saved after the room ends.
 
-All 30 characters, names, creature designs, backgrounds, and move sets were created for this game. No official Pokémon, Street Fighter characters, ripped sprites, or third-party game artwork are used. The look uses original Canvas pixel art, not ASCII.
+All 30 characters, names, creature designs, backgrounds, and move sets were created for this game. The 3D edition uses original procedural low-poly models, layered geometry, lighting, shadows, animated weather, and 3D combat effects. Drag the selected creature or use the rotation buttons to inspect it. No official Pokémon, Street Fighter characters, ripped sprites, or third-party game artwork are used. The five stage backgrounds, roster portraits, selected creature, and battles render in real 3D using bundled Three.js 0.186.1. Fighting follows the same side-view rules, with a camera that follows and moves closer as fighters approach. It is a 3D presentation with side-view movement. Browsers without WebGL 2 automatically use the previous illustrated Canvas renderer.
 
 ## Controls
 
@@ -83,7 +83,7 @@ npm run check
 npm test
 ```
 
-The automated suite exercises joystick dead zones and radial bounds, stage persistence, all 30 signature specials, the briefing, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
+The automated suite verifies all 30 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 30 signature specials, the briefing, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
 
 ## Multiplayer and hosting
 
@@ -100,13 +100,17 @@ The host simulates combat at a fixed 60 steps per second and broadcasts snapshot
 - Free signaling and relay services are external dependencies. Some school/work networks block peer connections. Try another network if a room cannot connect.
 - This is a casual host-authoritative game, with host latency advantage and no rollback netcode, account-based anticheat, or competitive matchmaking. The host is trusted. Do not use it for wagers or secure ranked tournaments.
 - Bot difficulty changes reaction cadence and defensive behavior. Bot opponents are clearly labeled.
-- Original pixel art is generated locally in Canvas. Optional Google Fonts has system fallbacks. No advertising or analytics is included.
+- Original 3D creatures and worlds are generated locally; the illustrated fallback uses Canvas. Optional Google Fonts has system fallbacks. No advertising or analytics is included.
 
 ## Source layout
 
 - `fighters.js` — original roster, stats, moves, elements, arenas, and titles.
 - `combat.js` — authoritative combat, AI, combos, timing, and round resolution.
-- `art.js` — original creature sprites, animation, and combat effects.
+- `graphics3d.js` — WebGL rendering, preview rotation, portraits, combat camera, and effects.
+- `creatures3d.js` — 30 original procedural sculptures and animated limbs.
+- `worlds3d.js` — five lit 3D arenas and weather.
+- `scene-data.js` — shared world coordinates and palettes.
+- `art.js` — original illustrated creature sprites and fallback combat effects.
 - `stages.js` — five original layered Canvas worlds and animated weather.
 - `joystick.js` — radial movement mapping, pointer capture, and safe release.
 - `arcade.css` — stage-first arcade selection and glass touch controls.
@@ -116,4 +120,4 @@ The host simulates combat at a fixed 60 steps per second and broadcasts snapshot
 - `tests/` — meaningful game-state and progression checks.
 - `vendor/` — pinned PeerJS build and its MIT license.
 
-Made by Swopnab Bikram Karki with Codex. MIT licensed; the bundled PeerJS license is preserved separately.
+Made by Swopnab Bikram Karki with Codex. MIT licensed; the bundled PeerJS and Three.js MIT licenses are preserved separately.
