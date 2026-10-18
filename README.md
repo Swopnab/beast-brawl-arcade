@@ -1,19 +1,21 @@
 # BEAST BRAWL / 3D ARCADE
 
-**Five worlds. Twelve fighters. Your rules.** A separate, stage-first edition of Beast Brawl. An original 3D arcade fighting game with 12 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
+**Five worlds. Twelve fighters. Your rules.** A separate, quick-start edition of Beast Brawl. An original 3D arcade fighting game with 12 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
 
 ## Play
 
 **[Choose your battleground →](https://swopnab.github.io/beast-brawl-arcade/)**
 
-Start by choosing **Caldera Rift** (volcano), **Azure Falls** (water), **Rainline City** (rain), **Sunscorch Dunes** (sunny desert), or **Verdant Ruins** (jungle). The selected scenery stays behind the character roster and becomes the battle arena. All five worlds are free.
+Choose **Player vs Player** or **Player vs Bot** first. Then choose a background, then click a creature. The chosen creature’s name is your player name. There is no account, nickname field, final setup form, or separate confirmation button.
 
-The arcade character-select screen gives your fighter roughly half the desktop screen, with all 12 original creatures available beside it. Browse with arrow keys, click a creature, or use Random. **Lock in** opens bot and online match settings. On phones, the portrait and a four-column roster share the viewport. Stage selection, character selection, and battles fit the screen without page scrolling; menus and chat keep their own bounded reading areas.
+- **Bot:** clicking a character starts the five-second countdown immediately, with a random rival and standard bot difficulty.
+- **Online:** the PvP button creates a room automatically. Share the invite shown above the game; friends opening it choose PvP to join directly. A room code can also be entered from the first page. The host chooses the shared background, and both players choose a creature. As soon as both characters are chosen, a synchronized five-second countdown starts automatically. No separate ready/start button is needed.
+- Hover a creature or use arrow keys to preview it on a laptop. Click, tap, or press Enter to choose it and start. Random chooses a character and starts too. The preview rotation and move-list buttons remain available before choosing.
+- Chat is available through the **Chat** button in an online room. Messages stay in the room and are not saved after it ends.
 
-- **Solo:** choose a creature, choose a rival or “Surprise me,” select a bot difficulty, and press **Fight a bot**.
-- **Online:** choose a creature, enter a nickname, and **Create a private room**. Copy the invite link to a friend on another device. They choose their creature and **Ready up**; the host starts the match.
-- A synchronized **six-second survival guide** explains the controls before the first round. Subsequent rounds have three-second countdowns.
-- Use the **alibi lounge** for live room chat. Messages are visible only to room participants and are not saved after the room ends.
+The five free worlds are **Caldera Rift** (volcano), **Azure Falls** (water), **Rainline City** (rain), **Sunscorch Dunes** (sunny desert), and **Verdant Ruins** (jungle). The selected scenery stays behind character selection and becomes the battle arena.
+
+The screens adapt to phone, tablet, laptop, and desktop dimensions without page scrolling. Portrait and landscape layouts keep the twelve creature choices and touch controls accessible. Safe-area spacing keeps controls clear of notches and home indicators. Browsers with touch input show the glass joystick even on larger tablets; keyboard controls remain available. Menus and chat have bounded reading areas.
 
 All 12 characters, names, creature designs, backgrounds, and move sets were created for this game. Each creature has its own anatomy, proportions, size, and limb animation. The 3D edition uses original procedural low-poly models, layered geometry, lighting, shadows, animated weather, and 3D combat effects. Drag the selected creature or use the rotation buttons to inspect it. No official Pokémon, Street Fighter characters, ripped sprites, or third-party game artwork are used. The five stage backgrounds, roster portraits, selected creature, and battles render in real 3D using bundled Three.js 0.186.1. Fighting follows the same side-view rules, with a camera that follows and moves closer as fighters approach. It is a 3D presentation with side-view movement. Browsers without WebGL 2 automatically use the previous illustrated Canvas renderer.
 
@@ -91,7 +93,7 @@ npm run check
 npm test
 ```
 
-The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 signature specials, the briefing, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
+The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 signature specials, the five-second countdown, two-player readiness, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
 
 ## Multiplayer and hosting
 
@@ -126,6 +128,7 @@ The host simulates combat at a fixed 60 steps per second and broadcasts snapshot
 - `profile.js` — browser-local progression and cosmetic purchases.
 - `app.js` — selection, fullscreen, controls, settings, synchronized briefing, HUD, chat, and rewards UI.
 - `audio.js` — original synthesized adventure soundtrack, sound buses, and volume preferences.
+- `flow.js` / `flow.css` — mode-first entry, automatic readiness, five-second start, and responsive setup.
 - `viewport.css` — responsive screens that fit the display without page scrolling.
 - `tests/` — meaningful game-state and progression checks.
 - `vendor/` — pinned PeerJS build and its MIT license.

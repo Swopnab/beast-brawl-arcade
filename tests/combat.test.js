@@ -5,14 +5,14 @@ import {createMatch,step,queueAction,emptyInput,rewardFor} from '../combat.js';
 import {cleanProfile,grantReward,equipArena,titleFor} from '../profile.js';
 const idle=()=>[emptyInput(),emptyInput()];
 function advance(s,frames,inputs=idle()){for(let n=0;n<frames;n++)step(s,inputs);}
-function fight(a='ashfang',b='zipcat'){const s=createMatch(a,b,{mode:'online',matchId:'test-match'});advance(s,360);s.fighters[0].x=500;s.fighters[1].x=590;return s;}
+function fight(a='ashfang',b='zipcat'){const s=createMatch(a,b,{mode:'online',matchId:'test-match'});advance(s,300);s.fighters[0].x=500;s.fighters[1].x=590;return s;}
 test('12 original fighters have distinct identities and complete move lists',()=>{
   assert.equal(FIGHTERS.length,12);assert.equal(new Set(FIGHTERS.map(f=>f.id)).size,12);assert.equal(new Set(FIGHTERS.map(f=>f.shape)).size,12);
   for(const f of FIGHTERS){for(const [,key]of MOVE_LIST)assert.ok(f.moves[key],`${f.name} missing ${key}`);assert.ok(f.hp>=900&&f.hp<=1250);}
   assert.equal(new Set(FIGHTERS.map(f=>f.moves.special)).size,12);
 });
-test('six-second briefing blocks attacks, then starts exactly on schedule',()=>{
-  const s=createMatch('ashfang','zipcat');assert.equal(queueAction(s,0,'q'),false);advance(s,359);assert.equal(s.phase,'briefing');step(s);assert.equal(s.phase,'fight');assert.equal(s.time,3600);
+test('five-second countdown blocks attacks, then starts exactly on schedule',()=>{
+  const s=createMatch('ashfang','zipcat');assert.equal(queueAction(s,0,'q'),false);advance(s,299);assert.equal(s.phase,'briefing');step(s);assert.equal(s.phase,'fight');assert.equal(s.time,3600);
 });
 test('movement, jump, and arena bounds work',()=>{
   const s=fight();advance(s,60,[{left:true,jump:true},emptyInput()]);assert.ok(s.fighters[0].x<500);assert.ok(s.fighters[0].y<0);

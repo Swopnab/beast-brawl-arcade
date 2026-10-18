@@ -1,3 +1,4 @@
+import {START_SECONDS} from './flow.js?v=6';
 import { fighter } from './fighters.js?v=5';
 export const FPS = 60;
 export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,light:{duration:17,active:5},heavy:{duration:28,active:10},special:{duration:46,active:12},finisher:{duration:66,active:17}});
@@ -22,7 +23,7 @@ function makeFighter(id, index) {
     combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',roundWins:0};
 }
 export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',seed=157,matchId='match'}={}) {
-  return {id:matchId,stageId,phase:'briefing',phaseTimer:360,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,
+  return {id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,
     fighters:[makeFighter(p1,0),makeFighter(p2,1)],projectiles:[],effects:[],events:[],nextId:1,seed,
     lastRoundWinner:null,winner:null,shake:0,flash:0};
 }

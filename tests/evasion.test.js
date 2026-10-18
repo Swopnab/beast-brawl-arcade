@@ -4,7 +4,7 @@ import {createMatch,step,queueAction,emptyInput,hurtbox,PACE} from '../combat.js
 import {fighter} from '../fighters.js';
 const idle=()=>[emptyInput(),emptyInput()];
 function advance(s,n,input=idle()){for(let i=0;i<n;i++)step(s,input);}
-function duel(){const s=createMatch('ashfang','zipcat',{mode:'online'});advance(s,360);s.fighters[0].x=500;s.fighters[1].x=590;return s;}
+function duel(){const s=createMatch('ashfang','zipcat',{mode:'online'});advance(s,300);s.fighters[0].x=500;s.fighters[1].x=590;return s;}
 test('pressing jump lifts the defender over a low sweep for its entire active window',()=>{
   const s=duel(),before=s.fighters[1].hp;advance(s,6,[emptyInput(),{jump:true}]);assert.ok(s.fighters[1].y<-65);queueAction(s,0,'q',{block:true});advance(s,17);assert.equal(s.fighters[1].hp,before);
 });
