@@ -6,7 +6,7 @@
   "description": "Stage-first arcade creature fighter with five original worlds and glass joystick controls.",
   "scripts": {
     "dev": "python3 -m http.server 4320 --bind 127.0.0.1",
-    "check": "node --check app.js && node --check combat.js && node --check art.js && node --check network.js && node --check stages.js && node --check joystick.js && node --check graphics3d.js && node --check creatures3d.js && node --check worlds3d.js && node --check scene-data.js && node --check audio.js && node --check flow.js",
+    "check": "node --check attack-keys.js && node --check app.js && node --check combat.js && node --check art.js && node --check network.js && node --check stages.js && node --check joystick.js && node --check graphics3d.js && node --check creatures3d.js && node --check worlds3d.js && node --check scene-data.js && node --check audio.js && node --check flow.js",
     "test": "node --test tests/*.test.js"
   }
 }

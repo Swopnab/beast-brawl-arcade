@@ -51,13 +51,21 @@ export const ULTIMATES = Object.freeze({
   crysteel:{style:'crystal-lock',hits:2,range:165,duration:70,active:22,freeze:22,description:'Raise two close crystal ridges. The second hit briefly freezes your rival.'}
 });
 const RANGED_NAMES=['Flare Orb','Cinder Bolt','Salt Shot','Pressure Cannon','Spark Dart','Crown Bolt','Thorn Shard','Pollen Shot','Wisp Orb','Rift Spark','Snowball','Crystal Shard'];
+export const FIGHT_GEAR=Object.freeze({
+  ashfang:{type:'gloves',name:'Ember boxing gloves'},kilnback:{type:'paw-gauntlets',name:'Furnace forepaw gauntlets'},
+  reefclaw:{type:'claw-guards',name:'Padded pincer guards'},inkveil:{type:'tentacle-cuffs',name:'Tentacle strike cuffs'},
+  zipcat:{type:'paw-mitts',name:'Lightning paw mitts'},boltstag:{type:'horn-guards',name:'Thunder horn guards'},
+  thornox:{type:'horn-pads',name:'Root horn pads'},petalmoth:{type:'wing-guards',name:'Petal wing guards'},
+  hexeye:{type:'guard-orbs',name:'Spectral guard orbs'},nullwyrm:{type:'tail-weight',name:'Comet tail weight'},
+  glaciop:{type:'gloves',name:'Frost boxing gloves'},crysteel:{type:'gloves',name:'Titan boxing gloves'}
+});
 export const FIGHTERS = rows.map((r, index) => {
   const [id,name,element,shape,tagline,bio,hp,speed,jump,power,jab,heavy,special,kind,superName,specialDamage] = r;
   return Object.freeze({id,name,element,shape,tagline,bio,hp,speed,jump,power,index,anatomy:Object.freeze(ANATOMY[id]),
     color:ELEMENTS[element].color,dark:ELEMENTS[element].dark,
     accent:['#fff0b3','#ffe5df','#d8d2ff','#f2fff0','#ffb6cd'][index % 5],
-    ultimate:Object.freeze(ULTIMATES[id]),
-    moves:{jab,heavy,ranged:RANGED_NAMES[index],special:RANGED_NAMES[index],super:superName,deflect:jab.split(' ')[0]+' Deflect',counter:heavy.split(' ')[0]+' Reversal',
+    ultimate:Object.freeze(ULTIMATES[id]),gear:Object.freeze(FIGHT_GEAR[id]),
+    moves:{jab,heavy,ranged:RANGED_NAMES[index],special:RANGED_NAMES[index],super:superName,deflect:jab.split(' ')[0]+' Deflect',counter:heavy.split(' ')[0]+' Reversal',pushback:heavy.split(' ')[0]+' Pushback',
       low:jab.split(' ')[0]+' Sweep',air:heavy.split(' ')[0]+' Dive',rising:'Rising '+heavy,
       moving:special.split(' ')[0]+' Shoulder',launcher:heavy.split(' ')[0]+' Skybreaker',chain:special+' EX',breaker:jab.split(' ')[0]+' Low Finish'},kind,specialDamage,
     reach:88 + (index % 5) * 5,
@@ -67,9 +75,10 @@ export const FIGHTERS = rows.map((r, index) => {
 export const fighter = id => FIGHTERS.find(f => f.id === id) || FIGHTERS[0];
 export const MOVE_LIST = [
   ['Q','ranged','Ranged poke: exactly 25% of your basic E damage. Slow recovery; duck, jump, or reflect it.'],['E','heavy','Fast close-combat strike. Your main source of damage and energy.'],
-  ['R','deflect','Tap just before impact: an 8-frame window parries melee or reflects a projectile. Misses leave you exposed.'],['SPACE','super','Unique creature ultimate. Requires 100 energy; stays in close-combat range.'],
+  ['R','deflect','Tap just before impact: an 8-frame window parries melee or reflects a projectile. Misses leave you exposed.'],['Q + E + SPACE','super','Press together at 100 energy for your unique ultimate. Space alone and the touch ultimate button are shortcuts.'],
   ['S + E','low','Duck into a low sweep. Jump over sweeps to evade them.'],['W + E','rising','Rising melee strike. Catches airborne opponents.'],
   ['AIR + E','air','Diving strike. Punish an opponent below you.'],['A/D + E','moving','Forward-moving heavy. Close the distance.'],
+  ['E → E','pushback','Land two consecutive melee hits within 1.5 seconds to push your opponent away. Misses and other attacks reset the pair.'],
   ['E → E → E','launcher','Three timed melee strikes finish with a launcher.'],
   ['E → E → S+E','breaker','Finish two melee strikes with a ducking sweep.'],
   ['DEFLECT → E','counter','After a successful R, press E within 0.75 seconds for a stronger reversal.']

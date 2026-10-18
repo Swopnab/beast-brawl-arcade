@@ -1,5 +1,5 @@
 import {drawStage} from './stages.js';
-import { fighter, ARENAS } from './fighters.js?v=7';
+import { fighter, ARENAS } from './fighters.js?v=8';
 let scratch;
 const rect=(c,color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
 function poly(c,color,points){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
@@ -112,6 +112,16 @@ function creaturePixels(c,s,pose,time){
     r(ink,30,28,10+extension,7);r(shade,31,29,8+extension,5);r(body,36+extension,27,7,7);r(light,38+extension,28,3,2);
     r(ink,10,28,7,8);r(shade,11,29,5,5);
   }
+  // Matching equipment remains visible in the illustrated fallback.
+  if(['ashfang','glaciop','crysteel','zipcat','kilnback'].includes(s.id)){
+    const glove=s.id==='crysteel'?'#488dd4':s.id==='glaciop'?'#e879a5':'#e34f4c',extension=attacking?10:0;
+    r('#fff3dd',12,28,6,3);r(glove,10,31,10,8);r('#fff3dd',36+extension,27,7,3);r(glove,36+extension,30,11,9);
+  }else if(s.id==='reefclaw'){r('#de6857',5,22,9,6);r('#fff3dd',6,22,7,2);r('#de6857',39,21,9,6);}
+  else if(s.id==='inkveil'){for(const x of [12,22,33,42]){r('#248ab0',x,41,5,4);r('#ffedc9',x,41,5,1);}}
+  else if(['boltstag','thornox'].includes(s.id)){r('#ce6d45',12,3,5,6);r('#fff0c8',12,8,5,2);r('#ce6d45',36,3,5,6);}
+  else if(s.id==='petalmoth'){r('#eea0b7',4,18,5,12);r('#fff2cd',4,22,5,2);r('#eea0b7',44,18,5,12);}
+  else if(s.id==='hexeye'){for(const x of [6,43]){r('#f0d0ff',x,27,7,7);r('#7c59b6',x+1,28,5,5);}}
+  else if(s.id==='nullwyrm'){r('#b884c7',7,36,9,7);r('#ffe7b5',8,37,7,2);}
   if(pose==='guard'||pose==='deflect'){r(light,34,16,4,20);r(shade,30,20,8,7);}
 }
 export function drawCreature(ctx,spec,x,y,scale=3,pose='idle',time=0,facing=1,flash=false){

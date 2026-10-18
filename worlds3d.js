@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {WORLD_PALETTES} from './scene-data.js?v=7';
+import {WORLD_PALETTES} from './scene-data.js?v=8';
 const box=new T.BoxGeometry(1,1,1),rock=new T.DodecahedronGeometry(1,0),cone=new T.ConeGeometry(1,1,7),cylinder=new T.CylinderGeometry(1,1,1,12),ball=new T.SphereGeometry(1,16,10);
 export function makeWorld(id){
   const p=WORLD_PALETTES[id]||WORLD_PALETTES.volcano,scene=new T.Scene();scene.background=new T.Color(p.sky);scene.fog=new T.Fog(p.fog,45,145);

@@ -63,7 +63,19 @@ export function makeCreature(spec){
     for(const s of [-1,1]){const g=group(body,[s*.62,1.3,0]);part(g,box,d,[0,-.3,0],[.7,1.25,.72]);part(g,crystal,c,[0,-.67,.32],[.57,.44,.73]);legs.push(g);const arm=group(body,[s*1.12,3.5,0]);part(arm,crystal,a,[s*.14,.12,0],[.7,.9,.66]);part(arm,box,d,[s*.18,-.7,0],[.55,1.25,.6]);part(arm,crystal,c,[s*.24,-1.4,.2],[.7,.74,.64]);arms.push(arm);}
     head=group(body,[0,4.3,0]);part(head,crystal,c,[0,0,0],[.76,.92,.65]);for(const s of [-1,1])part(head,box,'#f1fdff',[s*.29,.04,.55],[.3,.1,.08],[0,0,s*.1],1.2);for(let i=0;i<3;i++)part(head,crystal,a,[(i-1)*.4,.7+(.2-Math.abs(i-1)*.1),-.05],[.27,.8,.3],[],.2);
   }
-  root.userData={spec,body,head,legs,arms,tails,wings,tentacles,rest:body.position.clone()};root.scale.setScalar(spec.anatomy.scale);return root;
+  const gear=[];
+  function equipment(parent,p){const g=group(parent,p);g.name=spec.gear.name;g.userData.equipment=spec.gear.type;gear.push(g);return g;}
+  function glove(parent,p,size,color,side=1){const g=equipment(parent,p);g.scale.setScalar(size);ell(g,color,[0,0,.08],[.46,.4,.5]);ell(g,color,[side*.3,-.13,.3],[.22,.24,.28]);ell(g,'#fff3dd',[0,.3,0],[.37,.13,.36]);part(g,box,'#29354a',[0,.31,.34],[.35,.12,.06]);for(const x of [-.13,0,.13])part(g,box,'#fff3dd',[x,.32,.38],[.035,.15,.035]);return g;}
+  if(['ashfang','glaciop','crysteel'].includes(spec.id))arms.forEach((arm,i)=>{const titan=spec.id==='crysteel',small=spec.id==='glaciop';glove(arm,[titan?(i?1:-1)*.24:0,titan?-1.4:small?-.55:-.68,titan?.24:small?.22:.34],titan?1.45:small?.64:.95,titan?'#488dd4':small?'#e879a5':'#e34f4c',i?1:-1);});
+  if(['zipcat','kilnback'].includes(spec.id))legs.filter(l=>l.position.z>0).forEach((leg,i)=>glove(leg,[0,-.48,.35],spec.id==='zipcat'?.7:1.05,spec.id==='zipcat'?'#d59b35':'#bb6244',i?1:-1));
+  if(spec.id==='reefclaw')arms.forEach((arm,i)=>{const side=i?1:-1,g=equipment(arm,[side*.65,.3,.8]);ell(g,'#de6857',[0,-.02,0],[.72,.42,.57]);part(g,torus,'#fff3dd',[0,.07,.47],[.52,.37,.3]);});
+  if(spec.id==='inkveil')tentacles.forEach((tentacle,i)=>{const t=i*Math.PI/3,g=equipment(tentacle,[Math.cos(t)*1.85,-1.23,Math.sin(t)*1.85]);ell(g,'#248ab0',[0,0,0],[.32,.24,.32]);part(g,torus,'#ffedc9',[0,.05,0],[.28,.28,.28],[Math.PI/2,0,0]);});
+  if(spec.id==='boltstag')for(const side of [-1,1]){const g=equipment(head,[side*.53,1.3,-.34]);ell(g,'#ce9a31',[0,0,0],[.22,.39,.24]);part(g,torus,'#fff4ce',[0,-.2,0],[.2,.2,.2],[Math.PI/2,0,0]);}
+  if(spec.id==='thornox')for(const side of [-1,1]){const g=equipment(head,[side*1.14,1.1,-.12]);ell(g,'#ce6d45',[0,0,0],[.35,.52,.35],[0,0,-side*.6]);part(g,torus,'#fff0c8',[0,-.18,0],[.33,.33,.33],[Math.PI/2,0,0]);}
+  if(spec.id==='petalmoth')wings.forEach((wing,i)=>{const side=i?1:-1;for(const y of [.6,-.65]){const g=equipment(wing,[side*(y>0?2.1:1.65),y,.08]);ell(g,'#eea0b7',[0,0,0],[.23,.5,.22],[0,0,-side*.3]);part(g,box,'#fff2cd',[0,0,.2],[.27,.13,.08]);}});
+  if(spec.id==='hexeye')for(const side of [-1,1]){const g=equipment(body,[side*1.38,2.65,.25]);ell(g,'#7c59b6',[0,0,0],[.4,.42,.4],[],.2);part(g,torus,'#f0d0ff',[0,0,.08],[.43,.43,.43],[0,.3,0],.3);}
+  if(spec.id==='nullwyrm'){const g=equipment(body,[-1.8,1.12,-.48]);ell(g,'#b884c7',[0,0,0],[.53,.42,.45]);part(g,torus,'#ffe7b5',[0,0,.1],[.47,.37,.37]);for(const side of [-1,1])spike(g,'#ffe7b5',[side*.4,.2,0],[.16,.4,.15],[0,0,-side*.8]);}
+  root.userData={spec,body,head,legs,arms,tails,wings,tentacles,gear,rest:body.position.clone()};root.scale.setScalar(spec.anatomy.scale);return root;
 }
 export function animateCreature(root,pose,time,attack=null,hit=false,reduced=false){
   const {spec,body,head,legs,arms,tails,wings,tentacles}=root.userData,t=reduced?0:time/1000,walking=pose==='walk',ko=pose==='ko',guard=pose==='deflect'||pose==='guard',duck=pose==='duck'||pose==='low'||pose==='breaker',floating=spec.anatomy.floating;

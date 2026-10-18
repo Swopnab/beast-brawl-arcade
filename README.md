@@ -35,16 +35,17 @@ Elemental effects include fireballs with ember trails, pressure-cannon water jet
 | Q | Ranged projectile; exactly one quarter of basic E damage |
 | E | Fast close-combat strike; 22-frame recovery |
 | R | Timed deflect: 8 frames to parry melee or reflect a projectile; 40-frame cooldown |
-| Space | Creature-specific close-range ultimate; requires 100% energy |
+| Q + E + Space | Press together at 100% energy for your creature-specific ultimate (Space alone or the touch ultimate button also works) |
 | S + E | Low sweep |
 | W + E | Rising melee |
 | E while airborne | Diving melee |
 | A or D + E | Moving melee |
+| E → E | Two consecutive landed melee hits within 1.5 seconds push your opponent away |
 | E → E → E | Skybreaker: launching melee finisher |
 | E → E → S+E | Low Finish: ducking combo sweep |
 | Successful R → E | Counter within 0.75 seconds; 150% basic melee damage |
 
-Each creature has **11 named move commands**. Open **Your move list** to see the selected creature’s exact attack names and descriptions. Combos must be entered within 2.5 seconds; time each input as the preceding animation finishes. The last quarter-second of an animation accepts buffered inputs. Pressing every key simultaneously is not a successful combo.
+Each creature has **12 named move commands**. Open **Your move list** to see the selected creature’s exact attack names and descriptions. Combos must be entered within 2.5 seconds; time each input as the preceding animation finishes. The last quarter-second of an animation accepts buffered inputs. Pressing every key simultaneously is not a successful combo.
 
 Phones, iPads, and other touchscreens have a translucent glass thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to duck; diagonals combine movement with jumping or ducking. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
 
@@ -151,3 +152,9 @@ The host simulates combat at a fixed 60 steps per second and broadcasts snapshot
 - `vendor/` — pinned PeerJS build and its MIT license.
 
 Made by Swopnab Bikram Karki with Codex. MIT licensed; the bundled PeerJS and Three.js MIT licenses are preserved separately.
+
+## Fighting gear and final combat polish
+
+All twelve creatures wear gear matched to their anatomy: boxing gloves for Ashfang, Glaciop, and Crysteel; forepaw gauntlets for Kilnback; paw mitts for Zipcat; pincer guards for Reefclaw; six tentacle cuffs for Inkveil; horn pads for Boltstag and Thornox; wing guards for Petalmoth; spectral guard orbs for Hexeye; and a padded comet tail weight for Nullwyrm. Gear follows the relevant limbs and is also represented in illustrated mode.
+
+At full energy a 90ms input window recognizes Q + E + Space in any order without accidentally launching ordinary attacks first. Space alone and the touch ultimate button remain accessible shortcuts. Two consecutive connected E strikes within 1.5 seconds produce stronger pushback. Misses, non-melee attacks, getting hit, and parries reset the pair.

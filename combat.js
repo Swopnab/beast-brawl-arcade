@@ -1,5 +1,5 @@
-import {START_SECONDS} from './flow.js?v=7';
-import {fighter} from './fighters.js?v=7';
+import {START_SECONDS} from './flow.js?v=8';
+import {fighter} from './fighters.js?v=8';
 export const FPS=60, ROUND_FRAMES=60*FPS;
 export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,melee:{duration:22,active:6},ranged:{duration:44,active:12},deflect:{duration:18,window:8,cooldown:40},finisher:{duration:66,active:17}});
 export const ACTIONS=['q','e','r','space'];
@@ -15,7 +15,7 @@ export function strikeBand(f,a){
   return {top:f.y-100,bottom:f.y-24};
 }
 const verticalOverlap=(a,b)=>a.top<=b.bottom&&a.bottom>=b.top;
-function makeFighter(id,index){const spec=fighter(id);return {id:spec.id,x:index?880:320,y:0,vx:0,vy:0,facing:index?-1:1,hp:spec.hp,maxHp:spec.hp,energy:0,stun:0,invulnerable:0,attack:null,cooldown:0,ducking:false,parryFrames:0,deflectCooldown:0,counterWindow:0,queue:[],sequence:[],combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',roundWins:0};}
+function makeFighter(id,index){const spec=fighter(id);return {id:spec.id,x:index?880:320,y:0,vx:0,vy:0,facing:index?-1:1,hp:spec.hp,maxHp:spec.hp,energy:0,stun:0,invulnerable:0,attack:null,cooldown:0,ducking:false,parryFrames:0,deflectCooldown:0,counterWindow:0,queue:[],sequence:[],combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',meleeStreak:0,lastMeleeHit:-9999,roundWins:0};}
 export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',seed=157,matchId='match'}={}){return {id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,fighters:[makeFighter(p1,0),makeFighter(p2,1)],projectiles:[],effects:[],events:[],nextId:1,seed,lastRoundWinner:null,winner:null,shake:0,flash:0};}
 function random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
 function event(s,type,data={}){s.events.push({id:s.nextId++,type,frame:s.frame,...data});s.events=s.events.slice(-20);}
@@ -43,38 +43,41 @@ function beginAttack(s,index,entry){
     else if(f.sequence.length===3){kind='launcher';move=spec.moves.launcher;damage=base*1.4;launch=true;range+=20;}
     else if(entry.context.moving){kind='moving';move=spec.moves.moving;f.vx=f.facing*8;range+=20;}
     if(f.sequence.length===3)f.sequence=[];
-  }else if(action!=='r')f.sequence=[];
+  }else{f.sequence=[];f.meleeStreak=0;}
   if(action==='r'){f.parryFrames=PACE.deflect.window;f.deflectCooldown=PACE.deflect.cooldown;f.vx=0;}
   if(action==='space'){f.energy=0;range=spec.ultimate.range;launch=!!spec.ultimate.launch;s.flash=8;event(s,'super',{player:index,name:move});}
   f.lastMove=move;f.ducking=action==='e'&&entry.context.duck;
   f.attack={kind,action,age:0,duration,active,damage:action==='q'?damage:Math.round(damage),range,move,launch,hitPulses:[],spawned:false,ultimateId:action==='space'?spec.ultimate.style:null};
   f.cooldown=duration;event(s,'attack',{player:index,kind,move});
 }
-function hit(s,index,damage,knockback,launch,{projectile=null,ultimate=null,counter=false}={}){
+function hit(s,index,damage,knockback,launch,{projectile=null,ultimate=null,counter=false,melee=false}={}){
   const a=s.fighters[index],d=s.fighters[1-index];if(d.hp<=0||d.invulnerable>0)return false;
   const direction=projectile?(projectile.vx>=0?1:-1):a.facing;
   if(d.parryFrames>0&&d.facing===-direction){
     d.parryFrames=0;d.counterWindow=45;d.attack=null;d.cooldown=0;d.energy=Math.min(100,d.energy+8);
     if(projectile){projectile.owner=1-index;projectile.vx=-projectile.vx;projectile.x=d.x+d.facing*56;projectile.reflected=true;}
-    else{a.attack=null;a.queue=[];a.cooldown=22;a.stun=22;a.vx=-direction*3;}
+    else{a.attack=null;a.queue=[];a.meleeStreak=0;a.cooldown=22;a.stun=22;a.vx=-direction*3;}
     s.effects.push({id:s.nextId++,type:projectile?'reflect':'parry',x:d.x,y:d.y-65,age:0,life:26,color:'#abf6ff',amount:0});
     event(s,projectile?'reflect':'parry',{player:1-index});return 'deflected';
   }
   const armored=d.attack?.kind==='super'&&['furnace-ring','root-charge'].includes(d.attack.ultimateId);
+  let pushback=false;
+  if(melee){a.meleeStreak=s.frame-a.lastMeleeHit<=90?a.meleeStreak+1:1;a.lastMeleeHit=s.frame;if(a.meleeStreak>=2){pushback=true;knockback=22;a.meleeStreak=0;a.lastMove=fighter(a.id).moves.pushback;}}
   const amount=Math.max(1,Math.round(damage*(armored?.5:1)));
   d.hp=Math.max(0,d.hp-amount);d.hitFlash=8;d.vx=direction*knockback;d.stun=armored?0:Math.min(28,8+damage/16);
   if(ultimate?.freeze)d.stun+=ultimate.freeze;
+  if(pushback&&!armored)d.stun=Math.max(d.stun,22);
   if(launch&&!armored)d.vy=-11;
   d.invulnerable=10;
   // Successful hits interrupt ordinary moves. Armored ultimates can trade blows.
-  if(!armored){d.attack=null;d.parryFrames=0;d.queue=[];d.sequence=[];d.cooldown=0;}
+  if(!armored){d.attack=null;d.parryFrames=0;d.queue=[];d.sequence=[];d.meleeStreak=0;d.cooldown=0;}
   a.energy=Math.min(100,a.energy+(projectile?2:12));d.energy=Math.min(100,d.energy+amount*.08);
   a.combo=a.comboAge>0?a.combo+1:1;a.comboAge=85;
   s.shake=projectile?2:damage>=130?13:6;
-  s.effects.push({id:s.nextId++,type:counter?'counter':'hit',x:d.x,y:(hurtbox(d).top+hurtbox(d).bottom)/2,age:0,life:22,color:fighter(a.id).color,amount});
+  s.effects.push({id:s.nextId++,type:pushback?'pushback':counter?'counter':'hit',x:d.x,y:(hurtbox(d).top+hurtbox(d).bottom)/2,age:0,life:22,color:fighter(a.id).color,amount});
   if(damage>=130)s.flash=4;
   if(ultimate?.heal)a.hp=Math.min(a.maxHp,a.hp+Math.round(amount*ultimate.heal));
-  event(s,counter?'counter':'hit',{player:index,damage:amount,combo:a.combo,ranged:!!projectile});return true;
+  event(s,counter?'counter':'hit',{player:index,damage:amount,combo:a.combo,ranged:!!projectile});if(pushback)event(s,'pushback',{player:index});return true;
 }
 function updateUltimate(s,f,a,target){
   const age=a.age,style=a.ultimateId,active=a.active;
@@ -104,12 +107,12 @@ function updateAttack(s,index){
       const dx=target.x-f.x,facingTarget=dx*f.facing>=-35||ultimate?.radial;
       if(Math.abs(dx)<a.range+25&&verticalOverlap(strikeBand(f,a),hurtbox(target))&&facingTarget){
         const perHit=Math.round(a.damage/hits),last=pulse===hits-1;
-        const result=hit(s,index,perHit,last?7:1,a.launch&&last,{ultimate:ultimate?{...ultimate,freeze:last?ultimate.freeze:0}:null,counter:a.kind==='counter'});
+        const result=hit(s,index,perHit,last?(a.action==='e'?2:7):1,a.launch&&last,{ultimate:ultimate?{...ultimate,freeze:last?ultimate.freeze:0}:null,counter:a.kind==='counter',melee:a.action==='e'});
         if(result)a.hitPulses.push(pulse);
       }
     }
   }
-  if(a.age>=a.duration&&f.attack===a)f.attack=null;
+  if(a.age>=a.duration&&f.attack===a){if(a.action==='e'&&!a.hitPulses.length)f.meleeStreak=0;f.attack=null;}
 }
 function botInput(s){
   const f=s.fighters[1],op=s.fighters[0],dx=op.x-f.x,d=Math.abs(dx),input=emptyInput();

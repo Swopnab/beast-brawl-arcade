@@ -1,13 +1,14 @@
-import {canStartOnline,START_SECONDS} from './flow.js?v=7';
-import {cleanAudioSettings,createGameAudio} from './audio.js?v=7';
+import {canStartOnline,START_SECONDS} from './flow.js?v=8';
+import {cleanAudioSettings,createGameAudio} from './audio.js?v=8';
 let graphics3D=null;
-try{const {createGraphics3D}=await import('./graphics3d.js?v=7');graphics3D=createGraphics3D();}catch(error){console.warn('3D unavailable; using the original illustrated renderer.',error.message);for(const id of ['scene-background','preview-canvas','arena']){const old=document.getElementById(id),fresh=document.createElement('canvas');for(const a of old.attributes)fresh.setAttribute(a.name,a.value);old.replaceWith(fresh);}document.body.classList.remove('graphics-3d');document.getElementById('render-status').textContent='ILLUSTRATED MODE / 3D UNAVAILABLE';}
+try{const {createGraphics3D}=await import('./graphics3d.js?v=8');graphics3D=createGraphics3D();}catch(error){console.warn('3D unavailable; using the original illustrated renderer.',error.message);for(const id of ['scene-background','preview-canvas','arena']){const old=document.getElementById(id),fresh=document.createElement('canvas');for(const a of old.attributes)fresh.setAttribute(a.name,a.value);old.replaceWith(fresh);}document.body.classList.remove('graphics-3d');document.getElementById('render-status').textContent='ILLUSTRATED MODE / 3D UNAVAILABLE';}
 import {STAGES,getStage,drawStage} from './stages.js';
-import {attachJoystick} from './joystick.js';
-import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=7';
-import {createMatch,step,queueAction,emptyInput,FPS} from './combat.js?v=7';
-import {drawCreature,thumbnail,renderArena} from './art.js?v=7';
-import {Room,parseCode} from './network.js?v=7';
+import {attachJoystick} from './joystick.js?v=8';
+import {createAttackKeys} from './attack-keys.js?v=8';
+import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=8';
+import {createMatch,step,queueAction,emptyInput,FPS} from './combat.js?v=8';
+import {drawCreature,thumbnail,renderArena} from './art.js?v=8';
+import {Room,parseCode} from './network.js?v=8';
 import {cleanProfile,titleFor,grantReward,equipArena} from './profile.js';
 const $=id=>document.getElementById(id);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -22,6 +23,7 @@ let reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let lastChatKey='',lastChatAt=[-Infinity,-Infinity],previewTime=0;
 const myIndex=()=>net&&!net.host?1:0;
 function text(id,value){const el=$(id);if(el.textContent!==String(value))el.textContent=value;}
+function openDialog(id){clearInputs();$(id).showModal();}
 function saveProfile(){storage.set('bbarcade-profile',JSON.stringify(profile));renderProfile();}
 function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,3500);}
 function status(message){$('network-status').textContent=message;$('network-status').hidden=!message;}
@@ -38,14 +40,14 @@ function renderSettings(){
   $('music-volume').value=Math.round(preferences.music*100);$('sfx-volume').value=Math.round(preferences.sfx*100);text('music-value',`${Math.round(preferences.music*100)}%`);text('sfx-value',`${Math.round(preferences.sfx*100)}%`);
 }
 function saveSettings(){storage.set('bbarcade-settings',JSON.stringify(preferences));gameAudio.apply(preferences);renderSettings();}
-$('settings-open').addEventListener('click',()=>{renderSettings();$('settings-dialog').showModal();gameAudio.start();});
+$('settings-open').addEventListener('click',()=>{renderSettings();openDialog('settings-dialog');gameAudio.start();});
 for(const [id,key] of [['music-volume','music'],['sfx-volume','sfx']])$(id).addEventListener('input',()=>{preferences[key]=Number($(id).value)/100;saveSettings();});
 for(const [id,key] of [['music-enabled','musicEnabled'],['sfx-enabled','sfxEnabled']])$(id).addEventListener('change',()=>{preferences[key]=$(id).checked;saveSettings();});
 $('motion-enabled').addEventListener('change',()=>{preferences.motion=$('motion-enabled').checked;reducedMotion=!preferences.motion;graphics3D?.setMotion(preferences.motion);saveSettings();});
 async function toggleFullscreen(){try{if(document.fullscreenElement||document.webkitFullscreenElement){await(document.exitFullscreen?.()||document.webkitExitFullscreen?.());}else{const el=document.documentElement;if(el.requestFullscreen)await el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();else toast('Fullscreen is unavailable in this browser.');}}catch(error){console.warn('Fullscreen request:',error.message);toast('Fullscreen could not start. Try opening the game in a browser tab.');}}
 function updateFullscreen(){const on=!!(document.fullscreenElement||document.webkitFullscreenElement);$('fullscreen-toggle').setAttribute('aria-label',on?'Exit fullscreen':'Enter fullscreen');text('fullscreen-toggle',on?'⊡':'⛶');text('settings-fullscreen',on?'EXIT FULLSCREEN ⊡':'ENTER FULLSCREEN ⛶');}
 $('fullscreen-toggle').addEventListener('click',toggleFullscreen);$('settings-fullscreen').addEventListener('click',toggleFullscreen);document.addEventListener('fullscreenchange',updateFullscreen);document.addEventListener('webkitfullscreenchange',updateFullscreen);
-$('chat-toggle').addEventListener('click',()=>$('chat-dialog').showModal());
+$('chat-toggle').addEventListener('click',()=>openDialog('chat-dialog'));
 function renderProfile(){
   text('profile-title',titleFor(profile).toUpperCase());text('profile-stats',`LEVEL ${1+Math.floor(profile.xp/150)} · ${profile.xp} XP · ${profile.wins} WINS`);
   $('profile-progress').style.width=`${profile.xp%150/150*100}%`;text('shards-nav',`${profile.shards} ◆`);
@@ -77,16 +79,16 @@ function renderSelected(){
   $('selected-element').textContent=`${ELEMENTS[f.element].icon} ${f.element.toUpperCase()}`;
   text('selected-form',`${f.anatomy.size.toUpperCase()} / ${f.anatomy.form.toUpperCase()}`);text('selected-name',f.name.toUpperCase());text('selected-tagline',f.tagline);text('selected-bio',f.bio);text('selected-number',`NO. ${String(f.index+1).padStart(3,'0')}`);
   $('preview-canvas').setAttribute('aria-label',`Original creature ${f.name}`);
-  $('selected-special').innerHTML=`${esc(f.moves.super)} <span>SPACE</span>`;
+  $('selected-special').innerHTML=`${esc(f.moves.super)} <span>Q+E+SP</span>`;
   $('selected-stats').innerHTML=[['VITALITY',f.hp/1250*100,f.hp],['SPEED',f.speed/6*100,f.speed.toFixed(1)],['POWER',f.power/1.3*100,f.power.toFixed(2)]].map(([label,value,number])=>`<div class="stat"><span>${label}</span><div class="stat-track"><i style="width:${value}%"></i></div><strong>${number}</strong></div>`).join('');
 }
 renderFilters();renderRoster();renderSelected();
-function showMoves(id=selected){const f=fighter(id);text('moves-title',`${f.name.toUpperCase()} / MOVE LIST`);$('move-list').innerHTML=MOVE_LIST.map(([command,key,description])=>`<div class="move-row"><kbd>${command}</kbd><div><strong>${esc(f.moves[key])}</strong><p>${esc(key==='super'?f.ultimate.description:description)}</p></div></div>`).join('');$('moves-dialog').showModal();}
+function showMoves(id=selected){const f=fighter(id);text('moves-title',`${f.name.toUpperCase()} / MOVE LIST`);$('move-list').innerHTML=MOVE_LIST.map(([command,key,description])=>`<div class="move-row"><kbd>${command}</kbd><div><strong>${esc(f.moves[key])}</strong><p>${esc(key==='super'?f.ultimate.description:description)}</p></div></div>`).join('');openDialog('moves-dialog');}
 $('moves-open').addEventListener('click',()=>showMoves());$('battle-moves').addEventListener('click',()=>showMoves(match?.fighters[myIndex()].id||selected));
-$('controls-open').addEventListener('click',()=>$('controls-dialog').showModal());
+$('controls-open').addEventListener('click',()=>openDialog('controls-dialog'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));
 document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();}}));
-function showRewards(){renderRewards();$('rewards-dialog').showModal();}
+function showRewards(){renderRewards();openDialog('rewards-dialog');}
 $('rewards-open').addEventListener('click',showRewards);$('battle-rewards').addEventListener('click',showRewards);
 function renderRewards(){
   text('reward-balance',`${profile.shards} ◆ SHARDS / ${profile.xp} XP`);
@@ -107,7 +109,7 @@ function showBattle(state){
   text('arena-name',getStage(chosenStage).name.toUpperCase());text('battle-mode',net?'PLAYER VS PLAYER':'PLAYER VS BOT');
   text('battle-room-code',net?`ROOM ${net.code}`:'');text('p1-alias',names[0]+(myIndex()===0?' / YOU':''));text('p2-alias',names[1]+(net?myIndex()===1?' / YOU':'':' / BOT'));
   text('p1-name',names[0].toUpperCase());text('p2-name',names[1].toUpperCase());
-  text('battle-tip',net?'Host keeps this tab open and visible.':'E → E → E: Melee launcher · R deflect → E counter');text('last-move','A / D MOVE · W JUMP · S DUCK');renderHud();
+  text('battle-tip',net?'Host keeps this tab open and visible.':'E → E: Pushback · Q+E+SPACE: Ultimate');text('last-move','A / D MOVE · W JUMP · S DUCK');renderHud();
 }
 function startBot(){
   if(busy||net||match)return;
@@ -175,7 +177,7 @@ function returnToLobby(){
   if(!net.host){net.send({type:'lobby-request'});return;}
   match=null;fighterLocked=false;net.locked=false;delete net.cache.snapshot;lobby.stage='lobby';lobby.ready=[false,false];showSelect();publishLobby();renderSelected();renderRoster();
 }
-function requestExit(){if(match&&match.phase!=='finished'){$('exit-detail').textContent=net?'Leaving disconnects this match. If you are hosting, the room closes for both players. Unfinished matches earn no rewards.':'Unfinished matches earn no rewards. Your completed-match rewards are already saved.';$('exit-dialog').showModal();}else leaveRoom();}
+function requestExit(){if(match&&match.phase!=='finished'){$('exit-detail').textContent=net?'Leaving disconnects this match. If you are hosting, the room closes for both players. Unfinished matches earn no rewards.':'Unfinished matches earn no rewards. Your completed-match rewards are already saved.';openDialog('exit-dialog');}else leaveRoom();}
 $('exit-battle').addEventListener('click',requestExit);
 $('confirm-exit').addEventListener('click',()=>{$('exit-dialog').close();leaveRoom();});
 document.querySelector('.brand').addEventListener('click',e=>{if(match||net){e.preventDefault();requestExit();}});
@@ -198,35 +200,37 @@ function renderChat(){
   if(stick)log.scrollTop=log.scrollHeight;
 }
 $('chat-form').addEventListener('submit',e=>{e.preventDefault();const input=$('chat-input'),message=input.value.trim();if(!net||!message)return;if(net.host){if(addChat(0,message))input.value='';}else{net.send({type:'chat',text:message});input.value='';}});
-function clearInputs(){releaseJoystick();inputs[myIndex()]=emptyInput();document.querySelectorAll('.touch-controls .active').forEach(b=>b.classList.remove('active'));if(net&&!net.host)net.send({type:'input',input:inputs[1]});}
+function clearInputs(){keyboardAttacks.reset();touchAttacks.reset();releaseJoystick();inputs[myIndex()]=emptyInput();document.querySelectorAll('.touch-controls .active').forEach(b=>b.classList.remove('active'));if(net&&!net.host)net.send({type:'input',input:inputs[1]});}
 function move(key,value){if(!match)return;inputs[myIndex()][key]=value;if(net&&!net.host)net.send({type:'input',input:inputs[1]});}
 function attack(action){
-  if(!match||match.phase!=='fight'||net&&!net.connected)return;
+  if(!match||match.phase!=='fight'||document.querySelector('dialog[open]')||net&&!net.connected)return;
   const index=myIndex();if(net&&!net.host)net.send({type:'action',action});else queueAction(match,index,action,inputs[index]);
   if(performance.now()-trailAt>2000)inputTrail=[];inputTrail.push(action==='space'?'SP':action.toUpperCase());inputTrail=inputTrail.slice(-3);trailAt=performance.now();text('input-trail',inputTrail.join(' › '));
 }
+const attackOptions={emit:attack,isFull:()=>!!match&&match.fighters[myIndex()].energy>=100};
+const keyboardAttacks=createAttackKeys(attackOptions),touchAttacks=createAttackKeys(attackOptions);
 const releaseJoystick=attachJoystick($('glass-joystick'),v=>{for(const key of ['left','right','jump','duck'])move(key,v[key]);});
 if(navigator.maxTouchPoints>0)document.body.classList.add('has-touch');
 const moveKeys={KeyA:'left',KeyD:'right',KeyW:'jump',KeyS:'duck'},attackKeys={KeyQ:'q',KeyE:'e',KeyR:'r',Space:'space'};
 document.addEventListener('keydown',e=>{
   if(!match||$('battle-screen').hidden||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||e.target.isContentEditable)return;
   if(moveKeys[e.code]){e.preventDefault();move(moveKeys[e.code],true);}
-  else if(attackKeys[e.code]){e.preventDefault();if(!e.repeat)attack(attackKeys[e.code]);}
+  else if(attackKeys[e.code]){e.preventDefault();if(!e.repeat)keyboardAttacks.down(attackKeys[e.code]);}
 });
-document.addEventListener('keyup',e=>{if(moveKeys[e.code])move(moveKeys[e.code],false);});window.addEventListener('blur',clearInputs);
+document.addEventListener('keyup',e=>{if(moveKeys[e.code])move(moveKeys[e.code],false);if(attackKeys[e.code])keyboardAttacks.up(attackKeys[e.code]);});window.addEventListener('blur',clearInputs);
 document.querySelectorAll('[data-move]').forEach(b=>{
   b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);b.classList.add('active');move(b.dataset.move,true);});
   ['pointerup','pointercancel','lostpointercapture'].forEach(name=>b.addEventListener(name,()=>{b.classList.remove('active');move(b.dataset.move,false);}));
 });
-document.querySelectorAll('[data-action]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);b.classList.add('active');attack(b.dataset.action);});['pointerup','pointercancel','lostpointercapture'].forEach(name=>b.addEventListener(name,()=>b.classList.remove('active')));});
+document.querySelectorAll('[data-action]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);b.classList.add('active');touchAttacks.down(b.dataset.action);});['pointerup','pointercancel','lostpointercapture'].forEach(name=>b.addEventListener(name,()=>{b.classList.remove('active');touchAttacks.up(b.dataset.action);}));});
 function renderHud(){
   if(!match)return;
-  for(let i=0;i<2;i++){const f=match.fighters[i],prefix=`p${i+1}`;$(prefix+'-health').style.transform=`scaleX(${f.hp/f.maxHp})`;text(prefix+'-hp',`${Math.ceil(f.hp)} / ${f.maxHp}`);$(prefix+'-energy').style.width=`${f.energy}%`;text(prefix+'-energy-label',f.energy>=100?'SPACE / ULTIMATE READY':`ENERGY ${Math.floor(f.energy)}%`);$(prefix+'-energy-label').classList.toggle('full',f.energy>=100);text(prefix+'-rounds','●'.repeat(f.roundWins)+'○'.repeat(Math.max(0,2-f.roundWins)));}
+  for(let i=0;i<2;i++){const f=match.fighters[i],prefix=`p${i+1}`;$(prefix+'-health').style.transform=`scaleX(${f.hp/f.maxHp})`;text(prefix+'-hp',`${Math.ceil(f.hp)} / ${f.maxHp}`);$(prefix+'-energy').style.width=`${f.energy}%`;text(prefix+'-energy-label',f.energy>=100?'Q+E+SPACE / ULTIMATE READY':`ENERGY ${Math.floor(f.energy)}%`);$(prefix+'-energy-label').classList.toggle('full',f.energy>=100);text(prefix+'-rounds','●'.repeat(f.roundWins)+'○'.repeat(Math.max(0,2-f.roundWins)));}
   text('round-label',`ROUND ${match.round}`);text('fight-timer',Math.ceil(match.time/FPS));
   const mine=match.fighters[myIndex()];text('last-move',mine.counterWindow>0?'COUNTER READY — PRESS E!':mine.parryFrames>0?'DEFLECT WINDOW':mine.ducking?'DUCKING — LOW PROFILE':mine.lastMove?.toUpperCase()||'A / D MOVE · W JUMP · S DUCK');
   if(performance.now()-trailAt>2200&&inputTrail.length){inputTrail=[];text('input-trail','');}
   $('pause-overlay').hidden=!(net&&!net.connected);
-  for(const event of match.events){if(event.id<=lastEvent)continue;lastEvent=event.id;if(match.frame-event.frame>12)continue;if(['parry','reflect','counter'].includes(event.type))beep(event.type==='counter'?330:880,.12,'triangle',.08);else if(event.type==='hit')beep(event.combo>2?220:100,.07,'triangle',.055);else if(event.type==='super')beep(90,.35,'sawtooth',.04);else if(event.type==='fight')beep(650,.12);else if(event.type==='empty-energy'&&event.player===myIndex())toast('Land melee hits to build 100% energy for your ultimate.');}
+  for(const event of match.events){if(event.id<=lastEvent)continue;lastEvent=event.id;if(match.frame-event.frame>12)continue;if(['parry','reflect','counter','pushback'].includes(event.type))beep(event.type==='counter'?330:880,.12,'triangle',.08);else if(event.type==='hit')beep(event.combo>2?220:100,.07,'triangle',.055);else if(event.type==='super')beep(90,.35,'sawtooth',.04);else if(event.type==='fight')beep(650,.12);else if(event.type==='empty-energy'&&event.player===myIndex())toast('Land melee hits to build 100% energy for your ultimate.');}
   const key=`${match.id}-${match.phase}-${match.round}`;
   if(key!==overlayKey){overlayKey=key;renderOverlay();}
   if(match.phase==='briefing'){text('briefing-seconds',`${Math.ceil(match.phaseTimer/FPS)}s`);$('briefing-progress').style.width=`${match.phaseTimer/(START_SECONDS*FPS)*100}%`;}
@@ -235,7 +239,7 @@ function renderHud(){
 function renderOverlay(){
   const overlay=$('fight-overlay');overlay.className=`fight-overlay ${match.phase}`;overlay.replaceChildren();$('match-actions').hidden=match.phase!=='finished';
   if(match.phase==='briefing'){
-    overlay.innerHTML=`<div class="ready-countdown"><p>${fighter(match.fighters[0].id).name.toUpperCase()} <em>VS</em> ${fighter(match.fighters[1].id).name.toUpperCase()}</p><strong id="briefing-seconds">5s</strong><h2>GET READY.</h2><p class="ready-controls">A/D MOVE · W JUMP · S DUCK<br>Q RANGE ¼ · E MELEE · R DEFLECT · SPACE ULTIMATE</p><div class="briefing-meter"><i id="briefing-progress"></i></div></div>`;
+    overlay.innerHTML=`<div class="ready-countdown"><p>${fighter(match.fighters[0].id).name.toUpperCase()} <em>VS</em> ${fighter(match.fighters[1].id).name.toUpperCase()}</p><strong id="briefing-seconds">5s</strong><h2>GET READY.</h2><p class="ready-controls">A/D MOVE · W JUMP · S DUCK<br>Q RANGE ¼ · E MELEE · R DEFLECT · Q+E+SPACE ULTIMATE</p><div class="briefing-meter"><i id="briefing-progress"></i></div></div>`;
   }else if(match.phase==='countdown'){overlay.innerHTML='<div id="count-number" class="count-number">3</div><div class="count-caption">NEXT ROUND. SAME GRUDGE.</div>';}
   else if(match.phase==='roundover'){
     const winner=match.lastRoundWinner;const name=winner===null?'ROUND DRAW':`${fighter(match.fighters[winner].id).name.toUpperCase()} WINS`;
