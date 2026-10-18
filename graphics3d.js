@@ -1,8 +1,8 @@
 import * as T from './vendor/three.module.js';
-import {fighter,ARENAS} from './fighters.js?v=5';
-import {makeCreature,animateCreature} from './creatures3d.js?v=5';
-import {makeWorld} from './worlds3d.js?v=5';
-import {combatPosition,poseFor,previewAngle} from './scene-data.js?v=5';
+import {fighter,ARENAS} from './fighters.js?v=7';
+import {makeCreature,animateCreature} from './creatures3d.js?v=7';
+import {makeWorld} from './worlds3d.js?v=7';
+import {combatPosition,poseFor,previewAngle} from './scene-data.js?v=7';
 let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 export function createGraphics3D(){
   const renders=[];
@@ -58,9 +58,28 @@ export function createGraphics3D(){
           for(let k=0;k<6;k++){const m=effect(w,n++,k%2?'#e1f8ff':'#72c9f2',x-direction*k*.22,y+Math.sin(k*2+t)*.3*power,z+Math.cos(k*2)*.2,.3*power);m.geometry=fxCone;m.scale.set(.13*power,.62*power,.13*power);m.rotation.z=-direction*1.1;}
         }
       };
-      for(const p of state.projectiles){const spec=fighter(state.fighters[p.owner].id),x=(p.x-600)/38,y=-p.y/38,power=p.superMove?1.65:1;if(p.kind==='trap'){const active=p.age>=p.warmup;ring(spec.color,x,.1,0,1.3,active?.8:.25);if(active)for(let k=0;k<5;k++){const m=effect(w,n++,k%2?'#b9f7ff':spec.color,x+(k-2)*.35,.8+Math.sin(k+p.age)*.2,0,.35,.8);m.geometry=fxCone;m.scale.set(.2,1.6,.2);}}else elemental(spec.element,x,y,.2,power,p.age,p.vx>=0?1:-1);}
-      for(const e of state.effects){const progress=e.age/e.life;for(let k=0;k<9;k++){const a=k*Math.PI*2/9+e.id;effect(w,n++,k%2?e.color:'#fff3d2',(e.x-600)/38+Math.cos(a)*progress*1.6,-e.y/38+Math.sin(a)*progress*1.6,.2+Math.sin(k)*.3,.07+(1-progress)*.09,1-progress);}if(e.type==='guard'){const m=effect(w,n++,'#b4eaff',(e.x-600)/38,-e.y/38,.6,1,.2*(1-progress));m.geometry=fxBall;m.scale.set(.6,1,.3);}}
-      for(const f of state.fighters){if(f.attack){const a=f.attack,spec=fighter(f.id),active=Math.abs(a.age-a.active)<10,special=['special','chain','super'].includes(a.kind),x=(f.x-600)/38,y=-f.y/38;
+      for(const p of state.projectiles){const spec=fighter(p.sourceId||state.fighters[p.owner].id),x=(p.x-600)/38,y=-p.y/38,power=p.superMove?1.65:1;if(p.kind==='trap'){const active=p.age>=p.warmup;ring(spec.color,x,.1,0,1.3,active?.8:.25);if(active)for(let k=0;k<5;k++){const m=effect(w,n++,k%2?'#b9f7ff':spec.color,x+(k-2)*.35,.8+Math.sin(k+p.age)*.2,0,.35,.8);m.geometry=fxCone;m.scale.set(.2,1.6,.2);}}else elemental(spec.element,x,y,.2,power,p.age,p.vx>=0?1:-1);}
+      for(const e of state.effects){const progress=e.age/e.life;for(let k=0;k<9;k++){const a=k*Math.PI*2/9+e.id;effect(w,n++,k%2?e.color:'#fff3d2',(e.x-600)/38+Math.cos(a)*progress*1.6,-e.y/38+Math.sin(a)*progress*1.6,.2+Math.sin(k)*.3,.07+(1-progress)*.09,1-progress);}if(['parry','reflect','counter'].includes(e.type)){const m=effect(w,n++,'#b4eaff',(e.x-600)/38,-e.y/38,.6,1,.2*(1-progress));m.geometry=fxBall;m.scale.set(.6,1,.3);}}
+      // Distinct silhouettes communicate each ultimate's actual combat pattern.
+      for(const f of state.fighters){
+        const spec=fighter(f.id),x=(f.x-600)/38,y=-f.y/38;
+        if(f.parryFrames>0){const m=effect(w,n++,'#c9fbff',x+f.facing*.6,y+1.6,.65,1,.3);m.geometry=fxBall;m.scale.set(.3,1.2,.2);}
+        const a=f.attack;if(a?.kind!=='super')continue;
+        const t=a.age/12,dir=f.facing,color=spec.color,alpha=.75,style=a.ultimateId;
+        if(style==='dragon-dive')for(const side of [-1,1])for(let k=0;k<4;k++)beam(color,[x,y+2,.1],[x+dir*(.5+k*.5),y+2+side*(.8+k*.18),.1],.1,alpha);
+        if(style==='furnace-ring')for(let k=0;k<3;k++)ring(k%2?'#fff0a0':color,x,.12+k*.3,0,1.1+k*.7,.7);
+        if(style==='pincer-grab')for(const side of [-1,1]){const m=effect(w,n++,color,x+dir*1.4,y+1.3+side*.8*Math.cos(t),.3,.6);m.geometry=fxCone;m.rotation.z=side*Math.PI/2;m.scale.set(.35,1.4,.35);}
+        if(style==='tentacle-flurry')for(let k=0;k<6;k++)beam(color,[x,y+.5+k*.3,0],[x+dir*(1.5+Math.sin(t+k)),y+.6+k*.3,.5],.09);
+        if(style==='volt-rush')for(let k=0;k<5;k++){const m=effect(w,n++,k%2?'#fff8a6':color,x-dir*k*.55,y+1.1,.05,.7,(5-k)*.12);m.geometry=fxBall;m.scale.set(.3,.65,.3);}
+        if(style==='antler-rise')for(let k=-1;k<2;k++)beam(color,[x,y+1.6,.3],[x+dir*(.6+k*.4),y+3.6+Math.sin(t)*.5,.3],.1);
+        if(style==='root-charge')for(let k=0;k<4;k++){const m=effect(w,n++,color,x-dir*k*.6,.2,0,.4,.7);m.geometry=fxCone;m.rotation.z=-dir*.7;m.scale.set(.3,.8,.3);}
+        if(style==='petal-orbit')for(let k=0;k<9;k++){const theta=k*.7+t,m=effect(w,n++,k%2?'#f5d4ee':color,x+Math.cos(theta)*2.3,y+1.4+Math.sin(theta)*.9,Math.sin(theta)*.6,.3);m.geometry=fxCone;m.rotation.z=theta;}
+        if(style==='soul-siphon')for(let k=0;k<3;k++){const phase=(t*.4+k/3)%1;const m=effect(w,n++,color,x+dir*(1-phase)*3,y+1.3+Math.sin(phase*6)*.4,.3,.2);m.geometry=fxBall;beam(color,[x,y+1.8,.3],[m.position.x,m.position.y,.3],.025,.4);}
+        if(style==='gravity-well'){const m=effect(w,n++,'#211635',x,y+1.5,.4,.65);m.geometry=fxBall;for(let k=0;k<3;k++){const r=effect(w,n++,color,x,y+1.5,.4,1.1+k*.35,.65);r.geometry=fxRing;r.rotation.set(t+k,k,0);}}
+        if(style==='frost-ballet')for(let k=0;k<3;k++){const m=effect(w,n++,color,x-dir*k*.7,y+.6+k*.4,.2,.6,.7-k*.15);m.geometry=fxRing;m.rotation.z=t+k;}
+        if(style==='crystal-lock')for(let k=0;k<5;k++){const m=effect(w,n++,k%2?'#f1ffff':color,x+dir*(.5+k*.65),.4+Math.sin(t+k)*.1,.2,.4);m.geometry=fxCone;m.scale.set(.25,.8+(k%3)*.4,.3);}
+      }
+      for(const f of state.fighters){if(f.attack){const a=f.attack,spec=fighter(f.id),active=Math.abs(a.age-a.active)<10,special=['ranged','super'].includes(a.kind),x=(f.x-600)/38,y=-f.y/38;
         if(active){const power=a.kind==='super'?1.8:special?1.1:.5;elemental(spec.element,x+f.facing*1.25,y+1.7,.3,power,a.age,f.facing);if(special){ring(spec.color,x,.11,0,1+(a.age-a.active+10)*.09,.65);if(spec.element==='Wild'||spec.element==='Frost')for(let k=0;k<5;k++){const m=effect(w,n++,spec.color,x+f.facing*(.6+k*.4),.35+k*.1,0,.3,.8);m.geometry=fxCone;m.scale.set(.17,.7+k*.17,.15);}}}
         else if(special&&a.age<a.active){const charge=a.age/a.active;for(let k=0;k<5;k++){const theta=k*1.25+now/180;effect(w,n++,spec.color,x+Math.cos(theta)*(1-charge*.5),y+1.7+Math.sin(theta)*.6,.3,.06+charge*.06,.7);}}
       }}

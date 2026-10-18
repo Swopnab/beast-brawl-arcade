@@ -20,7 +20,7 @@ export class Room {
       this.ready=ready;this.fail=fail;
       const timeout=this.later(()=>fail('Couldn’t reach the room. Check your connection and the host’s room code.'),15000);
       this.status(host?'Opening your arena…':'Connecting to the arena…');
-      try{this.peer=host?new window.Peer(`bbrawl-arcade-v3-${this.code}`,{debug:0}):new window.Peer({debug:0});}
+      try{this.peer=host?new window.Peer(`bbrawl-arcade-v4-${this.code}`,{debug:0}):new window.Peer({debug:0});}
       catch{fail('This browser does not support peer connections. Try a current Chrome, Safari, Edge, or Firefox.');return;}
       this.peer.on('open',()=>{if(this.closed)return;if(host){this.status('');ready();}else this.connect();});
       this.peer.on('connection',conn=>{if(host)this.accept(conn);else conn.close();});
@@ -42,7 +42,7 @@ export class Room {
       if(!accepted){
         if(message.type!=='join')return;
         const reject=reason=>{try{conn.send({type:'error',message:reason});}catch{}this.later(()=>conn.close(),250);};
-        if(message.version!==1)return reject('Reload the page to update your game.');
+        if(message.version!==2)return reject('Reload the page to update your game.');
         if(typeof message.token!=='string'||!/^[a-f0-9-]{72}$/.test(message.token))return reject('Invalid seat. Please open a new tab.');
         if(this.guestToken&&this.guestToken!==message.token&&(this.connected||this.locked))return reject('This arena already has two fighters. Create another room.');
         if(this.locked&&!this.guestToken)return reject('A match is already running.');
@@ -57,7 +57,7 @@ export class Room {
       if(this.conn!==conn)return;
       if(message.type==='input'){
         const i=message.input;if(!i||typeof i!=='object')return;
-        this.callbacks.message?.({type:'input',input:{left:!!i.left,right:!!i.right,jump:!!i.jump,block:!!i.block}});
+        this.callbacks.message?.({type:'input',input:{left:!!i.left,right:!!i.right,jump:!!i.jump,duck:!!i.duck}});
       }else if(message.type==='action'&&['q','e','r','space'].includes(message.action))this.callbacks.message?.({type:'action',action:message.action});
       else if(message.type==='select'&&typeof message.id==='string'&&message.id.length<25)this.callbacks.message?.(message);
       else if(message.type==='ready')this.callbacks.message?.({type:'ready',ready:message.ready===true});
@@ -71,8 +71,8 @@ export class Room {
   connect(){
     if(this.closed||this.host||this.connected)return;
     if(this.peer?.disconnected){try{this.peer.reconnect();}catch{}this.reconnect();return;}
-    this.attempts++;const conn=this.peer.connect(`bbrawl-arcade-v3-${this.code}`,{reliable:true,serialization:'json'});this.conn=conn;
-    conn.on('open',()=>this.send({type:'join',version:1,token:this.token,name:this.name}));
+    this.attempts++;const conn=this.peer.connect(`bbrawl-arcade-v4-${this.code}`,{reliable:true,serialization:'json'});this.conn=conn;
+    conn.on('open',()=>this.send({type:'join',version:2,token:this.token,name:this.name}));
     conn.on('data',message=>{
       if(this.closed||this.conn!==conn||!message||typeof message!=='object')return;
       if(message.type==='welcome'){this.connected=true;this.attempts=0;this.status('');this.ready();this.callbacks.connected?.();}

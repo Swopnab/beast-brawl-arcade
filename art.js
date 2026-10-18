@@ -1,5 +1,5 @@
 import {drawStage} from './stages.js';
-import { fighter, ARENAS } from './fighters.js?v=5';
+import { fighter, ARENAS } from './fighters.js?v=7';
 let scratch;
 const rect=(c,color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
 function poly(c,color,points){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
@@ -9,7 +9,7 @@ function creaturePixels(c,s,pose,time){
   c.translate(7,6-Math.round(bob));
   const r=(color,x,y,w,h)=>rect(c,color,x,y,w,h);
   const p=(color,points)=>poly(c,color,points);
-  const attacking=['jab','heavy','special','super','low','air','rising','moving','launcher','chain','breaker'].includes(pose);
+  const attacking=['jab','heavy','ranged','super','low','air','rising','moving','launcher','counter','breaker'].includes(pose);
   const shape=s.shape;
   if(['octopus','jellyfish'].includes(shape)){
     const jelly=shape==='jellyfish';
@@ -112,13 +112,14 @@ function creaturePixels(c,s,pose,time){
     r(ink,30,28,10+extension,7);r(shade,31,29,8+extension,5);r(body,36+extension,27,7,7);r(light,38+extension,28,3,2);
     r(ink,10,28,7,8);r(shade,11,29,5,5);
   }
-  if(pose==='guard'){r(light,34,16,4,20);r(shade,30,20,8,7);}
+  if(pose==='guard'||pose==='deflect'){r(light,34,16,4,20);r(shade,30,20,8,7);}
 }
 export function drawCreature(ctx,spec,x,y,scale=3,pose='idle',time=0,facing=1,flash=false){
   scratch??=Object.assign(document.createElement('canvas'),{width:72,height:64});
   const c=scratch.getContext('2d');c.clearRect(0,0,72,64);c.save();c.translate(3,8);creaturePixels(c,spec,pose,time);c.restore();
   if(flash){c.globalCompositeOperation='source-atop';c.fillStyle='#fff';c.globalAlpha=.72;c.fillRect(0,0,72,64);c.globalCompositeOperation='source-over';c.globalAlpha=1;}
   ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(facing,1);ctx.imageSmoothingEnabled=false;
+  if(['duck','low','breaker'].includes(pose))ctx.scale(1.08,.42);
   if(pose==='ko'){ctx.rotate(-.85);ctx.scale(1,.6);}
   ctx.drawImage(scratch,-36*scale,-57*scale,72*scale,64*scale);ctx.restore();
 }
@@ -167,7 +168,7 @@ export function renderArena(canvas,state,arenaId='neon',now=performance.now(),st
   state.fighters.forEach((f,i)=>{
     const pos=positions[i];pos.x+=(f.x-pos.x)*.5;pos.y+=(f.y-pos.y)*.5;
     ctx.fillStyle='#0008';ctx.beginPath();ctx.ellipse(pos.x,549,68,10,0,0,Math.PI*2);ctx.fill();
-    let pose=f.hp<=0?'ko':f.attack?.kind||(f.blocking?'guard':Math.abs(f.vx)>1?'walk':'idle');
+    let pose=f.hp<=0?'ko':f.attack?.kind||(f.ducking?'duck':Math.abs(f.vx)>1?'walk':'idle');
     if(f.attack)pose=f.attack.kind;
     if(f.hp<=0)pose='ko';
     const spec=fighter(f.id);
@@ -175,7 +176,7 @@ export function renderArena(canvas,state,arenaId='neon',now=performance.now(),st
     drawCreature(ctx,spec,pos.x,540+pos.y,3.05,pose,now,f.facing,f.hitFlash>0);
     if(f.attack&&f.attack.age>=f.attack.active-3&&f.attack.age<f.attack.active+8){
       ctx.save();ctx.translate(pos.x+f.facing*60,465+pos.y);ctx.scale(f.facing,1);
-      const special=['special','super','chain'].includes(f.attack.kind);
+      const special=['ranged','super'].includes(f.attack.kind);
       ctx.strokeStyle=special?spec.color:'#f8f0d3';ctx.lineWidth=f.attack.kind==='super'?14:5;ctx.globalAlpha=.7;
       ctx.beginPath();ctx.arc(0,0,special?75:48,-1.1,1.1);ctx.stroke();ctx.globalAlpha=.25;ctx.lineWidth=18;ctx.stroke();ctx.restore();
     }
@@ -189,7 +190,7 @@ export function renderArena(canvas,state,arenaId='neon',now=performance.now(),st
     ctx.restore();
   });
   state.effects.forEach(e=>{ctx.save();ctx.translate(e.x,540+e.y);ctx.globalAlpha=1-e.age/e.life;const r=12+e.age*3;
-    if(e.type==='guard'){ctx.strokeStyle='#aeeaff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,r,-1.8,1.8);ctx.stroke();}
+    if(['parry','reflect'].includes(e.type)){ctx.strokeStyle='#aeeaff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,r,-1.8,1.8);ctx.stroke();}
     else{for(let i=0;i<8;i++){const a=i*Math.PI/4+e.id;rect(ctx,i%2?'#fff6d5':e.color,Math.cos(a)*r,Math.sin(a)*r,4+i%3,4+i%3);}ctx.fillStyle='#fff3ce';ctx.font='bold 22px monospace';ctx.textAlign='center';ctx.fillText(e.amount,0,-e.age*2-20);}
     ctx.restore();});
   if(state.flash&&!reducedMotion){ctx.fillStyle=`rgba(255,248,230,${Math.min(.3,state.flash*.025)})`;ctx.fillRect(0,0,1200,675);}

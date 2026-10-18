@@ -23,7 +23,7 @@ All 12 characters, names, creature designs, backgrounds, and move sets were crea
 
 Press **⛶** in the top right for fullscreen in supported browsers; press it again or Escape to leave. The **⚙** menu independently controls music volume, sound effect volume, both mute switches, and scenery/camera motion. Preferences stay on this device. The original eight-bar adventure soundtrack is enabled by default and begins on the first click, tap, or keypress because browsers require interaction to start sound. Music pauses when the tab is hidden. Scenery motion can also be disabled independently of combat animations.
 
-Elemental effects include fireballs with ember trails, pressure-cannon water jets, forked lightning, leaf bursts and vines, void spirals, and ice shards. Ashfang’s R throws **Flare Orb**; Inkveil’s R fires **Pressure Cannon**. Other techniques show elemental charge, impact, and ground effects. These are real combat effects associated with damaging attacks, rather than decoration added to the menus.
+Elemental effects include fireballs with ember trails, pressure-cannon water jets, forked lightning, leaf bursts and vines, void spirals, and ice shards. Ashfang’s Q throws **Flare Orb**; Inkveil’s Q fires **Pressure Cannon**. Other techniques show elemental charge, impact, and ground effects. These are real combat effects associated with damaging attacks, rather than decoration added to the menus.
 
 ## Controls
 
@@ -31,30 +31,32 @@ Elemental effects include fireballs with ember trails, pressure-cannon water jet
 | --- | --- |
 | A / D | Move left / right |
 | W | Jump |
-| S | Hold to guard; guarding reduces incoming damage |
-| Q | Light attack |
-| E | Heavy attack |
-| R | Signature special |
-| Space | Charged finisher; requires 100% energy |
-| S + Q | Low sweep; increased chip damage through guard |
-| W + E | Rising heavy |
-| E while airborne | Diving heavy |
-| A or D + E | Moving heavy |
-| Q → Q → E | Skybreaker: launching combo finisher |
-| Q → E → R | Elemental EX: empowered signature special |
-| E → E → Q | Guardbreaker: bypasses guard |
+| S | Duck; lower your hurtbox to evade Q shots (no passive block) |
+| Q | Ranged projectile; exactly one quarter of basic E damage |
+| E | Fast close-combat strike; 22-frame recovery |
+| R | Timed deflect: 8 frames to parry melee or reflect a projectile; 40-frame cooldown |
+| Space | Creature-specific close-range ultimate; requires 100% energy |
+| S + E | Low sweep |
+| W + E | Rising melee |
+| E while airborne | Diving melee |
+| A or D + E | Moving melee |
+| E → E → E | Skybreaker: launching melee finisher |
+| E → E → S+E | Low Finish: ducking combo sweep |
+| Successful R → E | Counter within 0.75 seconds; 150% basic melee damage |
 
 Each creature has **11 named move commands**. Open **Your move list** to see the selected creature’s exact attack names and descriptions. Combos must be entered within 2.5 seconds; time each input as the preceding animation finishes. The last quarter-second of an animation accepts buffered inputs. Pressing every key simultaneously is not a successful combo.
 
-Phones, iPads, and other touchscreens have a translucent glass thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to guard; diagonals combine movement with jumping or guarding. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
+Phones, iPads, and other touchscreens have a translucent glass thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to duck; diagonals combine movement with jumping or ducking. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
 
 ## Match rules
 
 Each round lasts 60 seconds. Knock out your rival, or finish the round with the higher remaining **health percentage**. Equal health is a draw. Win two rounds to win the match; after a maximum of three rounds, whoever has more round wins takes the match. Equal round wins produce a match draw. Rounds advance automatically.
 
-Movement runs 18% faster than the previous edition. Light attacks recover in 17 frames, heavy attacks in 28, specials in 46, and finishers in 66, at a fixed 60 simulation steps per second. Jump speed and gravity are tuned for quick evasive hops.
+Movement runs 18% faster than the previous edition at a fixed 60 simulation steps per second. Melee attacks recover in 22 frames; ranged pokes take 44. Q damage is exactly 25% of each creature’s basic E damage. Melee hits build 12 energy, ranged hits only 2, and a deflect builds 8. The bot actively closes to melee range and uses ranged attacks sparingly.
 
-Energy builds through combat and slowly over time. Finishers consume a full meter. Blocking reduces damage but allows chip damage. Guardbreakers bypass guard. A timed jump clears low sweeps, ordinary punches, ground waves, and fireballs as your body leaves their path. Rising heavy attacks and launchers can still catch airborne rivals. Hit detection uses each creature’s actual height instead of a large generic vertical range. Each creature has its own health, speed, jumping strength, damage profile, and special technique.
+Hold S to duck under ranged shots; ducking does not reduce damage from strikes that connect. W jumps over sweeps and ordinary punches; rising attacks intercept airborne opponents. Tap R immediately before impact for an 8-frame deflect. It reflects Q shots at their original damage or parries a melee strike and interrupts its attacker. Missed deflects leave a recovery window and cannot be spammed. A successful deflect opens 45 frames (0.75 seconds) to press E for a counter dealing 150% basic melee damage. Ultimates can also be parried. Both players’ defensive inputs are resolved before hit detection.
+
+Energy builds through combat and slowly over time. Space consumes the full meter for a unique ultimate. All ultimates operate at close range; each has its own movement, hit pattern, animation, and visual effect. Hit detection uses creature-specific heights and the lower ducking hurtbox.
 
 ## The original roster
 
@@ -67,7 +69,22 @@ Energy builds through combat and slowly over time. Finishers consume a full mete
 | Void | Hexeye — floating bell, one eye and eight tendrils; Nullwyrm — floating cosmic serpent |
 | Frost | Glaciop — small two-legged hopper; Crysteel — giant two-legged crystal titan |
 
-Signature specials include traveling projectiles, rushing attacks, ground waves, delayed traps, radial bursts, rising strikes, slams, and healing siphons. Elements are visual/move-set identities, not a hidden type-advantage system.
+| Creature | Space ultimate | Behavior |
+| --- | --- | --- |
+| Ashfang | Dragonfall | Forward aerial dive and launch |
+| Kilnback | Core Meltdown | Armored radial furnace eruption |
+| Reefclaw | Reef Wrecker | Point-blank pincer grab |
+| Inkveil | Ocean Eclipse | Three tentacle strikes |
+| Zipcat | Nine Lives Overdrive | Five advancing electric hits |
+| Boltstag | Thunder Coronation | Rising antler launch |
+| Thornox | Forest Stampede | Armored charging horn strike |
+| Petalmoth | Bloomstorm | Two radial petal pulses |
+| Hexeye | Soul Parade | Three pulses with health siphon |
+| Nullwyrm | Singularity | Nearby gravity pull then implosion |
+| Glaciop | Avalanche Ballet | Three advancing aerial kicks |
+| Crysteel | Absolute Zero | Two crystal hits with a brief freeze |
+
+Elements identify visual style and move sets; there is no hidden type-advantage system.
 
 ## Rewards
 
@@ -93,7 +110,7 @@ npm run check
 npm test
 ```
 
-The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 signature specials, the five-second countdown, two-player readiness, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
+The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 unique ultimates, the exact ranged/melee damage ratio, ducking, timed parries, projectile ownership on reflection, counter expiry, melee-focused bot behavior, the five-second countdown, two-player readiness, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
 
 ## Multiplayer and hosting
 

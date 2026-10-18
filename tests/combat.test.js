@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {FIGHTERS,MOVE_LIST,fighter} from '../fighters.js';
-import {createMatch,step,queueAction,emptyInput,rewardFor} from '../combat.js';
+import {createMatch,step,queueAction,emptyInput,rewardFor,meleeDamage} from '../combat.js';
 import {cleanProfile,grantReward,equipArena,titleFor} from '../profile.js';
 const idle=()=>[emptyInput(),emptyInput()];
 function advance(s,frames,inputs=idle()){for(let n=0;n<frames;n++)step(s,inputs);}
@@ -18,35 +18,27 @@ test('movement, jump, and arena bounds work',()=>{
   const s=fight();advance(s,60,[{left:true,jump:true},emptyInput()]);assert.ok(s.fighters[0].x<500);assert.ok(s.fighters[0].y<0);
   advance(s,600,[{left:true},emptyInput()]);assert.equal(s.fighters[0].x,60);assert.equal(s.fighters[0].y,0);
 });
-test('Q light hits exactly once and builds energy',()=>{
-  const s=fight(),before=s.fighters[1].hp;assert.equal(queueAction(s,0,'q'),true);advance(s,30);
-  assert.equal(before-s.fighters[1].hp,Math.round(40*fighter('ashfang').power));assert.ok(s.fighters[0].energy>=10);assert.ok(s.fighters[1].energy>0);
+test('Q deals exactly one quarter of E damage for every creature',()=>{
+  for(const spec of FIGHTERS){const losses={};for(const action of ['q','e']){const s=fight(spec.id,'crysteel'),hp=s.fighters[1].hp;queueAction(s,0,action);advance(s,50);losses[action]=hp-s.fighters[1].hp;}assert.ok(losses.e>0,spec.name);assert.equal(losses.q/losses.e,.25,spec.name);}
 });
-test('distance and guarding prevent a full hit',()=>{
-  const miss=fight();miss.fighters[1].x=1050;queueAction(miss,0,'e');advance(miss,45);assert.equal(miss.fighters[1].hp,miss.fighters[1].maxHp);
-  const block=fight(),before=block.fighters[1].hp;queueAction(block,0,'e');advance(block,45,[emptyInput(),{block:true}]);assert.ok(before-block.fighters[1].hp<30);assert.ok(before-block.fighters[1].hp>0);
+test('E is a fast single melee hit and earns more energy than Q',()=>{
+  const s=fight(),before=s.fighters[1].hp;queueAction(s,0,'e');advance(s,22);assert.equal(before-s.fighters[1].hp,meleeDamage('ashfang'));assert.ok(s.fighters[0].energy>=12);assert.equal(s.fighters[0].attack,null);
 });
-test('Q Q E creates the unique launcher and launches the opponent',()=>{
-  const s=fight();queueAction(s,0,'q');advance(s,24);s.fighters[1].x=590;
-  queueAction(s,0,'q');advance(s,24);s.fighters[1].x=590;
-  queueAction(s,0,'e');advance(s,17);assert.equal(s.fighters[0].attack.kind,'launcher');assert.equal(s.fighters[0].lastMove,fighter('ashfang').moves.launcher);assert.ok(s.fighters[1].y<0);
+test('Q reaches at range while melee misses and projectile lifetime is bounded',()=>{
+  for(const action of ['q','e']){const s=fight();s.fighters[1].x=1000;queueAction(s,0,action);advance(s,60);assert.equal(s.fighters[1].hp<s.fighters[1].maxHp,action==='q');assert.equal(s.projectiles.length,0);}
 });
-test('Q E R produces an empowered signature move',()=>{
-  const s=fight();queueAction(s,0,'q');advance(s,24);queueAction(s,0,'e');advance(s,41);queueAction(s,0,'r');step(s);
-  assert.equal(s.fighters[0].attack.kind,'chain');assert.ok(s.fighters[0].attack.damage>fighter('ashfang').specialDamage);assert.equal(s.fighters[0].lastMove,'Flare Orb EX');
+test('three E strikes produce a launcher and two E then duck E produce a sweep',()=>{
+  for(const duck of [false,true]){const s=fight();for(let n=0;n<2;n++){queueAction(s,0,'e');advance(s,24);s.fighters[0].x=500;s.fighters[1].x=590;}queueAction(s,0,'e',{duck});advance(s,7,[{duck},emptyInput()]);assert.equal(s.fighters[0].attack.kind,duck?'breaker':'launcher');assert.equal(s.fighters[0].lastMove,fighter('ashfang').moves[duck?'breaker':'launcher']);if(!duck)assert.ok(s.fighters[1].y<0);}
 });
-test('E E Q produces an unblockable guardbreaker',()=>{
-  const s=fight();queueAction(s,0,'e');advance(s,41);queueAction(s,0,'e');advance(s,41);queueAction(s,0,'q');step(s);
-  assert.equal(s.fighters[0].attack.kind,'breaker');assert.equal(s.fighters[0].attack.unblockable,true);
-});
-test('directional and aerial attacks have different properties',()=>{
-  const low=fight();queueAction(low,0,'q',{block:true});step(low);assert.equal(low.fighters[0].attack.kind,'low');
+test('directional and aerial E moves have distinct properties',()=>{
+  const low=fight();queueAction(low,0,'e',{duck:true});step(low);assert.equal(low.fighters[0].attack.kind,'low');
   const rising=fight();queueAction(rising,0,'e',{jump:true});step(rising);assert.equal(rising.fighters[0].attack.kind,'rising');assert.ok(rising.fighters[0].vy<0);
   const moving=fight();queueAction(moving,0,'e',{right:true});step(moving);assert.equal(moving.fighters[0].attack.kind,'moving');assert.ok(moving.fighters[0].x>500);
   const air=fight();air.fighters[0].y=-100;queueAction(air,0,'e');step(air);assert.equal(air.fighters[0].attack.kind,'air');assert.ok(air.fighters[0].vy>0);
 });
-test('all 12 signature specials can damage a reachable rival',()=>{
-  for(const f of FIGHTERS){const s=fight(f.id,'crysteel'),before=s.fighters[1].hp;queueAction(s,0,'r');advance(s,100);assert.ok(s.fighters[1].hp<before,`${f.name} special failed`);}
+test('all 12 unique ultimates can damage a nearby rival',()=>{
+  assert.equal(new Set(FIGHTERS.map(f=>f.ultimate.style)).size,12);assert.equal(new Set(FIGHTERS.map(f=>f.moves.super)).size,12);
+  for(const f of FIGHTERS){const s=fight(f.id,'crysteel'),before=s.fighters[1].hp;s.fighters[0].energy=100;queueAction(s,0,'space');advance(s,100);assert.ok(s.fighters[1].hp<before,`${f.name} ultimate missed`);assert.equal(s.projectiles.length,0,`${f.name} should use close combat`);}
 });
 test('Space requires a full meter and consumes it',()=>{
   const s=fight();queueAction(s,0,'space');step(s);assert.equal(s.fighters[0].attack,null);assert.ok(s.events.some(e=>e.type==='empty-energy'));

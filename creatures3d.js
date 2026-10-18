@@ -66,7 +66,7 @@ export function makeCreature(spec){
   root.userData={spec,body,head,legs,arms,tails,wings,tentacles,rest:body.position.clone()};root.scale.setScalar(spec.anatomy.scale);return root;
 }
 export function animateCreature(root,pose,time,attack=null,hit=false,reduced=false){
-  const {spec,body,head,legs,arms,tails,wings,tentacles}=root.userData,t=reduced?0:time/1000,walking=pose==='walk',ko=pose==='ko',guard=pose==='guard',floating=spec.anatomy.floating;
+  const {spec,body,head,legs,arms,tails,wings,tentacles}=root.userData,t=reduced?0:time/1000,walking=pose==='walk',ko=pose==='ko',guard=pose==='deflect'||pose==='guard',duck=pose==='duck'||pose==='low'||pose==='breaker',floating=spec.anatomy.floating;
   body.position.y=floating?.15+Math.sin(t*2.3)*.16:Math.sin(t*2)*.025;body.rotation.z=ko?-1.22:guard?-.09:0;body.rotation.y=attack?Math.sin(attack.age/attack.duration*Math.PI)*.15:0;
   legs.forEach((l,i)=>{l.rotation.x=walking?Math.sin(t*10+(legs.length===4?[0,Math.PI,Math.PI,0][i]:i%2*Math.PI))*.38:0;});
   arms.forEach((arm,i)=>{arm.rotation.x=guard?-1:attack?-Math.sin(Math.min(1,attack.age/attack.active)*Math.PI/2)*1.2:Math.sin(t*2+i)*.07;});
@@ -74,4 +74,20 @@ export function animateCreature(root,pose,time,attack=null,hit=false,reduced=fal
   tentacles.forEach((g,i)=>{g.rotation.z=Math.sin(t*2+i)*.1;g.rotation.x=Math.cos(t*2.5+i)*.09+(attack?Math.sin(attack.age/attack.duration*Math.PI)*-.45:0);});
   tails.forEach((g,i)=>{g.rotation.y=Math.sin(t*2+i)*.08;});
   root.scale.setScalar(spec.anatomy.scale*(hit?1.025:1));
+  if(duck){root.scale.y*=.42;root.scale.x*=1.08;}
+  if(attack?.kind==='super'){
+    const progress=attack.age/attack.duration,pulse=Math.sin(progress*Math.PI);
+    if(attack.ultimateId==='dragon-dive')body.rotation.z=-pulse*.5;
+    if(attack.ultimateId==='furnace-ring')body.rotation.y=progress*Math.PI*2;
+    if(attack.ultimateId==='pincer-grab')arms.forEach((arm,i)=>arm.rotation.z=(i?1:-1)*pulse*.8);
+    if(attack.ultimateId==='tentacle-flurry')tentacles.forEach((g,i)=>g.rotation.x=-.8*Math.sin(attack.age*.25+i));
+    if(attack.ultimateId==='volt-rush')legs.forEach((l,i)=>l.rotation.x=Math.sin(attack.age*.7+i)*.7);
+    if(attack.ultimateId==='antler-rise')body.rotation.z=pulse*.3;
+    if(attack.ultimateId==='root-charge')body.rotation.z=-pulse*.25;
+    if(attack.ultimateId==='petal-orbit')wings.forEach((w,i)=>w.rotation.y=(i?1:-1)*Math.sin(attack.age*.3)*.8);
+    if(attack.ultimateId==='soul-siphon')tentacles.forEach((g,i)=>g.rotation.z=Math.sin(attack.age*.2+i)*.4);
+    if(attack.ultimateId==='gravity-well')body.rotation.y=progress*Math.PI*4;
+    if(attack.ultimateId==='frost-ballet')legs.forEach((l,i)=>l.rotation.x=Math.sin(attack.age*.4+i*Math.PI)*1.1);
+    if(attack.ultimateId==='crystal-lock')arms.forEach(arm=>arm.rotation.x=-pulse*2.3);
+  }
 }

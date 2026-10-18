@@ -35,27 +35,44 @@ export const ANATOMY = Object.freeze({
   glaciop:{form:'Two-legged ice hopper',size:'Small',scale:.7,bodyHeight:4.2,bodyWidth:2,legs:2,tentacles:0,floating:false},
   crysteel:{form:'Two-legged crystal titan',size:'Giant',scale:1.02,bodyHeight:5.7,bodyWidth:4,legs:2,tentacles:0,floating:false}
 });
+// Each ultimate has a different combat pattern, not just a different title.
+export const ULTIMATES = Object.freeze({
+  ashfang:{style:'dragon-dive',hits:1,range:155,duration:62,active:20,launch:true,description:'Leap forward, then dive into a launching dragon strike.'},
+  kilnback:{style:'furnace-ring',hits:1,range:180,duration:66,active:24,radial:true,description:'Plant your shell and erupt in a close furnace ring. Armor halves incoming damage.'},
+  reefclaw:{style:'pincer-grab',hits:1,range:115,duration:56,active:12,description:'A point-blank pincer grab that catches ducking opponents. Can be parried.'},
+  inkveil:{style:'tentacle-flurry',hits:3,range:160,duration:62,active:12,description:'Three alternating tentacle strikes that keep a nearby rival within reach.'},
+  zipcat:{style:'volt-rush',hits:5,range:120,duration:84,active:10,description:'Rush forward with five rapid electric paw strikes.'},
+  boltstag:{style:'antler-rise',hits:1,range:145,duration:60,active:17,launch:true,description:'Rocket upward with a lightning-crowned antler uppercut.'},
+  thornox:{style:'root-charge',hits:1,range:140,duration:62,active:18,launch:true,description:'An armored horn charge. Armor halves incoming damage during the rush.'},
+  petalmoth:{style:'petal-orbit',hits:2,range:190,duration:60,active:16,radial:true,description:'Two rotating rings of razor petals strike on either side of you.'},
+  hexeye:{style:'soul-siphon',hits:3,range:170,duration:66,active:16,heal:.35,description:'Three close spectral pulses restore health from damage dealt.'},
+  nullwyrm:{style:'gravity-well',hits:1,range:180,duration:68,active:28,radial:true,description:'Pull a nearby rival toward you, then collapse a short-range singularity.'},
+  glaciop:{style:'frost-ballet',hits:3,range:145,duration:68,active:14,launch:true,description:'Three springing ice kicks carry you forward and launch your rival.'},
+  crysteel:{style:'crystal-lock',hits:2,range:165,duration:70,active:22,freeze:22,description:'Raise two close crystal ridges. The second hit briefly freezes your rival.'}
+});
+const RANGED_NAMES=['Flare Orb','Cinder Bolt','Salt Shot','Pressure Cannon','Spark Dart','Crown Bolt','Thorn Shard','Pollen Shot','Wisp Orb','Rift Spark','Snowball','Crystal Shard'];
 export const FIGHTERS = rows.map((r, index) => {
   const [id,name,element,shape,tagline,bio,hp,speed,jump,power,jab,heavy,special,kind,superName,specialDamage] = r;
   return Object.freeze({id,name,element,shape,tagline,bio,hp,speed,jump,power,index,anatomy:Object.freeze(ANATOMY[id]),
     color:ELEMENTS[element].color,dark:ELEMENTS[element].dark,
     accent:['#fff0b3','#ffe5df','#d8d2ff','#f2fff0','#ffb6cd'][index % 5],
-    moves:{jab,heavy,special,super:superName,
+    ultimate:Object.freeze(ULTIMATES[id]),
+    moves:{jab,heavy,ranged:RANGED_NAMES[index],special:RANGED_NAMES[index],super:superName,deflect:jab.split(' ')[0]+' Deflect',counter:heavy.split(' ')[0]+' Reversal',
       low:jab.split(' ')[0]+' Sweep',air:heavy.split(' ')[0]+' Dive',rising:'Rising '+heavy,
-      moving:special.split(' ')[0]+' Shoulder',launcher:heavy.split(' ')[0]+' Skybreaker',chain:special+' EX',breaker:jab.split(' ')[0]+' Guardbreaker'},kind,specialDamage,
+      moving:special.split(' ')[0]+' Shoulder',launcher:heavy.split(' ')[0]+' Skybreaker',chain:special+' EX',breaker:jab.split(' ')[0]+' Low Finish'},kind,specialDamage,
     reach:88 + (index % 5) * 5,
-    combo:`${jab} → ${jab} → ${heavy}`
+    combo:`${heavy} → ${heavy} → ${heavy.split(' ')[0]} Skybreaker`
   });
 });
 export const fighter = id => FIGHTERS.find(f => f.id === id) || FIGHTERS[0];
 export const MOVE_LIST = [
-  ['Q','jab','Quick close-range strike. Builds your combo.'],['E','heavy','Slower strike. More damage and knockback.'],
-  ['R','special','Your creature’s signature elemental technique.'],['SPACE','super','Charged finisher. Requires 100 energy.'],
-  ['S + Q','low','Low sweep with extra chip damage through guard.'],['W + E','rising','Rising heavy strike. Launches airborne.'],
+  ['Q','ranged','Ranged poke: exactly 25% of your basic E damage. Slow recovery; duck, jump, or reflect it.'],['E','heavy','Fast close-combat strike. Your main source of damage and energy.'],
+  ['R','deflect','Tap just before impact: an 8-frame window parries melee or reflects a projectile. Misses leave you exposed.'],['SPACE','super','Unique creature ultimate. Requires 100 energy; stays in close-combat range.'],
+  ['S + E','low','Duck into a low sweep. Jump over sweeps to evade them.'],['W + E','rising','Rising melee strike. Catches airborne opponents.'],
   ['AIR + E','air','Diving strike. Punish an opponent below you.'],['A/D + E','moving','Forward-moving heavy. Close the distance.'],
-  ['Q → Q → E','launcher','Two lights, then heavy: a launching combo finisher.'],
-  ['Q → E → R','chain','Light, heavy, special: an empowered elemental attack.'],
-  ['E → E → Q','breaker','Two heavies, then light: breaks through guard.']
+  ['E → E → E','launcher','Three timed melee strikes finish with a launcher.'],
+  ['E → E → S+E','breaker','Finish two melee strikes with a ducking sweep.'],
+  ['DEFLECT → E','counter','After a successful R, press E within 0.75 seconds for a stronger reversal.']
 ];
 export const ARENAS = [
   {id:'neon',name:'Arcade Lime',cost:0,sky:'#101631',glow:'#c2f85f',accent:'#8b6cf8',description:'The streets are yours.'},

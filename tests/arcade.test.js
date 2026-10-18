@@ -4,8 +4,8 @@ import {joystickVector} from '../joystick.js';
 import {STAGES,getStage} from '../stages.js';
 import {createMatch,step,emptyInput} from '../combat.js';
 test('joystick dead zone, four directions, and diagonals map to game commands',()=>{
-  for(const [dx,dy,expected] of [[0,0,[]],[5,-5,[]],[-30,0,['left']],[30,0,['right']],[0,-40,['jump']],[0,40,['block']],[40,-40,['right','jump']],[-40,40,['left','block']]]){
-    const v=joystickVector(dx,dy);assert.deepEqual(['left','right','jump','block'].filter(k=>v[k]),expected);
+  for(const [dx,dy,expected] of [[0,0,[]],[5,-5,[]],[-30,0,['left']],[30,0,['right']],[0,-40,['jump']],[0,40,['duck']],[40,-40,['right','jump']],[-40,40,['left','duck']]]){
+    const v=joystickVector(dx,dy);assert.deepEqual(['left','right','jump','duck'].filter(k=>v[k]),expected);
   }
 });
 test('joystick clamps distant drags radially and invalid input resets safely',()=>{
