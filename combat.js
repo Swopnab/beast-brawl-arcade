@@ -1,5 +1,17 @@
-import { fighter } from './fighters.js';
+import { fighter } from './fighters.js?v=5';
 export const FPS = 60;
+export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,light:{duration:17,active:5},heavy:{duration:28,active:10},special:{duration:46,active:12},finisher:{duration:66,active:17}});
+export function hurtbox(f){const spec=fighter(f.id),height=Math.max(64,Math.min(205,spec.anatomy.bodyHeight*spec.anatomy.scale*38));return {top:f.y-height,bottom:f.y-(spec.anatomy.floating?20:8)};}
+export function strikeBand(f,attack){
+  if(attack.kind==='super')return {top:f.y-240,bottom:f.y+30};
+  if(attack.kind==='low')return {top:f.y-48,bottom:f.y+1};
+  if(['rising','launcher'].includes(attack.kind))return {top:f.y-205,bottom:f.y-25};
+  if(attack.kind==='air')return {top:f.y-80,bottom:f.y+110};
+  if(['special','chain'].includes(attack.kind)&&fighter(f.id).kind==='slam')return {top:-70,bottom:15};
+  if(['special','chain'].includes(attack.kind)&&fighter(f.id).kind==='uppercut')return {top:f.y-210,bottom:f.y-25};
+  return {top:f.y-100,bottom:f.y-45};
+}
+const verticalOverlap=(a,b)=>a.top<=b.bottom&&a.bottom>=b.top;
 export const ROUND_FRAMES = 60 * FPS;
 export const ACTIONS = ['q','e','r','space'];
 export const emptyInput = () => ({left:false,right:false,jump:false,block:false});
@@ -32,8 +44,9 @@ function beginAttack(s,index,entry) {
   let kind=action==='q'?'jab':action==='e'?'heavy':action==='r'?'special':'super';
   let damage=action==='q'?40:action==='e'?78:action==='r'?spec.specialDamage:200;
   let range=action==='q'?spec.reach:action==='e'?spec.reach+30:spec.reach+50;
-  let duration=action==='q'?23:action==='e'?40:action==='r'?66:88;
-  let active=action==='q'?8:action==='e'?16:action==='r'?18:24;
+  const timing=action==='q'?PACE.light:action==='e'?PACE.heavy:action==='r'?PACE.special:PACE.finisher;
+  let duration=timing.duration;
+  let active=timing.active;
   let move=spec.moves[kind],launch=false,unblockable=false,chip=.24;
   if (action==='q' && entry.context.block) { kind='low'; move=spec.moves.low; range+=12; damage=34; chip=.5; }
   if (action==='e' && f.y<-35) { kind='air'; move=spec.moves.air; damage=90; f.vy=Math.max(f.vy,7); }
@@ -54,14 +67,14 @@ function hit(s,attackerIndex,damage,knockback,launch,unblockable=false,chip=.24,
   const direction=sourceX===null?a.facing:(d.x>=sourceX?1:-1);
   const guarding=d.blocking && !unblockable && d.facing===-direction;
   const amount=Math.max(1,Math.round(damage*(guarding?chip:1)));
-  d.hp=Math.max(0,d.hp-amount);d.hitFlash=8;d.vx=direction*(guarding?2:knockback);d.stun=guarding?7:Math.min(28,10+damage/12);
+  d.hp=Math.max(0,d.hp-amount);d.hitFlash=8;d.vx=direction*(guarding?2:knockback);d.stun=guarding?7:Math.min(28,8+damage/16);
   if (launch&&!guarding) d.vy=-11;
   d.invulnerable=guarding?5:10;
   a.energy=Math.min(100,a.energy+(guarding?4:10));d.energy=Math.min(100,d.energy+amount*.12);
   a.combo=a.comboAge>0?a.combo+1:1;a.comboAge=85;
   s.shake=guarding?3:damage>=130?13:6;
   const color=fighter(a.id).color;
-  s.effects.push({id:s.nextId++,type:guarding?'guard':'hit',x:d.x,y:d.y-85,age:0,life:22,color,amount});
+  s.effects.push({id:s.nextId++,type:guarding?'guard':'hit',x:d.x,y:(hurtbox(d).top+hurtbox(d).bottom)/2,age:0,life:22,color,amount});
   if (damage>=130&&!guarding) s.flash=4;
   event(s,guarding?'guard':'hit',{player:attackerIndex,damage:amount,combo:a.combo});
   if (fighter(a.id).kind==='drain'&&a.attack&&['special','chain','super'].includes(a.attack.kind)) a.hp=Math.min(a.maxHp,a.hp+Math.round(amount*.3));
@@ -73,7 +86,7 @@ function spawn(s,index,attack) {
   if (kind==='projectile'||kind==='wave'||kind==='trap') {
     const trap=kind==='trap';
     s.projectiles.push({id:s.nextId++,owner:index,x:trap?s.fighters[1-index].x:f.x+f.facing*55,
-      y:kind==='wave'||trap?-22:f.y-83,vx:trap?0:f.facing*(superMove?14:10+spec.index%4),
+      y:kind==='wave'||trap?-22:f.y-83,vx:trap?0:f.facing*(superMove?17:12+spec.index%4),
       radius:superMove?44:kind==='wave'?26:17,damage:attack.damage,life:trap?100:130,age:0,
       warmup:trap?(superMove?18:24):0,color:spec.color,kind,superMove});
     return true;
@@ -85,17 +98,17 @@ function updateAttack(s,index) {
   if (!a) return;
   const spec=fighter(f.id),target=s.fighters[1-index];a.age++;
   if (['special','chain','super'].includes(a.kind)) {
-    if (spec.kind==='dash' && a.age<a.active+5) f.vx=f.facing*(a.kind==='super'?17:11);
+    if (spec.kind==='dash' && a.age<a.active+5) f.vx=f.facing*(a.kind==='super'?19:13);
     if (spec.kind==='uppercut' && a.age===a.active-7) f.vy=-12;
     if (spec.kind==='slam' && a.age===4) f.vy=-9;
   }
   if (a.age===a.active && ['special','chain','super'].includes(a.kind)) a.spawned=spawn(s,index,a);
   if (a.age>=a.active && a.age<a.active+10 && !a.hit && !a.spawned) {
-    const dx=target.x-f.x,dy=target.y-f.y;
+    const dx=target.x-f.x;
     let reach=a.range;
     if (['special','chain','super'].includes(a.kind)&&spec.kind==='burst') reach=a.kind==='super'?290:205;
     const facingTarget=dx*f.facing>=-35 || ['burst','slam'].includes(spec.kind)&&['special','chain','super'].includes(a.kind);
-    if (Math.abs(dx)<reach+25 && Math.abs(dy)<(a.kind==='super'?220:135) && facingTarget) {
+    if (Math.abs(dx)<reach+25 && verticalOverlap(strikeBand(f,a),hurtbox(target)) && facingTarget) {
       a.hit=hit(s,index,a.damage,a.kind==='jab'?4:9,a.launch||spec.kind==='uppercut'&&['special','super','chain'].includes(a.kind),a.unblockable,a.chip);
     }
   }
@@ -159,20 +172,20 @@ export function step(s,inputs=[emptyInput(),emptyInput()]) {
       if (!f.cooldown&&f.queue.length) beginAttack(s,i,f.queue.shift());
       if (!f.attack) {
         const direction=(input.right?1:0)-(input.left?1:0);
-        f.vx=direction*spec.speed*(f.blocking ? 0.3 : 1);if(direction)f.walk++;
-        if (input.jump&&f.y===0&&!f.blocking) f.vy=-spec.jump;
+        f.vx=direction*spec.speed*PACE.run*(f.blocking ? 0.3 : 1);if(direction)f.walk++;
+        if (input.jump&&f.y===0&&!f.blocking) f.vy=-spec.jump*PACE.jump;
       }
     }
     updateAttack(s,i);
     f.x=Math.max(60,Math.min(1140,f.x+f.vx));f.vx*=.82;
-    f.y+=f.vy;f.vy+=.65;if(f.y>=0){f.y=0;f.vy=0;}
+    f.y+=f.vy;f.vy+=PACE.gravity;if(f.y>=0){f.y=0;f.vy=0;}
   }
   const [a,b]=s.fighters;
   const gap=b.x-a.x;
   if(Math.abs(gap)<82&&Math.abs(a.y-b.y)<100){const push=(82-Math.abs(gap))/2;const sign=gap>=0?1:-1;a.x=Math.max(60,a.x-push*sign);b.x=Math.min(1140,b.x+push*sign);}
   for(const p of s.projectiles){p.age++;p.life--;if(p.age>p.warmup)p.x+=p.vx;
     const target=s.fighters[1-p.owner];
-    if(p.age>=p.warmup&&Math.abs(target.x-p.x)<p.radius+35&&Math.abs(target.y-65-p.y)<p.radius+60){
+    if(p.age>=p.warmup&&Math.abs(target.x-p.x)<p.radius+35&&verticalOverlap({top:p.y-p.radius,bottom:p.y+p.radius},hurtbox(target))){
       if(hit(s,p.owner,p.damage,p.superMove?13:6,false,false,.25,p.x-p.vx)){p.life=0;}
     }
   }

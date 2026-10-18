@@ -20,7 +20,7 @@ export class Room {
       this.ready=ready;this.fail=fail;
       const timeout=this.later(()=>fail('Couldn’t reach the room. Check your connection and the host’s room code.'),15000);
       this.status(host?'Opening your arena…':'Connecting to the arena…');
-      try{this.peer=host?new window.Peer(`bbrawl-arcade-v1-${this.code}`,{debug:0}):new window.Peer({debug:0});}
+      try{this.peer=host?new window.Peer(`bbrawl-arcade-v2-${this.code}`,{debug:0}):new window.Peer({debug:0});}
       catch{fail('This browser does not support peer connections. Try a current Chrome, Safari, Edge, or Firefox.');return;}
       this.peer.on('open',()=>{if(this.closed)return;if(host){this.status('');ready();}else this.connect();});
       this.peer.on('connection',conn=>{if(host)this.accept(conn);else conn.close();});
@@ -71,7 +71,7 @@ export class Room {
   connect(){
     if(this.closed||this.host||this.connected)return;
     if(this.peer?.disconnected){try{this.peer.reconnect();}catch{}this.reconnect();return;}
-    this.attempts++;const conn=this.peer.connect(`bbrawl-arcade-v1-${this.code}`,{reliable:true,serialization:'json'});this.conn=conn;
+    this.attempts++;const conn=this.peer.connect(`bbrawl-arcade-v2-${this.code}`,{reliable:true,serialization:'json'});this.conn=conn;
     conn.on('open',()=>this.send({type:'join',version:1,token:this.token,name:this.name}));
     conn.on('data',message=>{
       if(this.closed||this.conn!==conn||!message||typeof message!=='object')return;

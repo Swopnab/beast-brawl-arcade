@@ -1,5 +1,5 @@
 import {drawStage} from './stages.js';
-import { fighter, ARENAS } from './fighters.js';
+import { fighter, ARENAS } from './fighters.js?v=5';
 let scratch;
 const rect=(c,color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
 function poly(c,color,points){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}
@@ -11,6 +11,13 @@ function creaturePixels(c,s,pose,time){
   const p=(color,points)=>poly(c,color,points);
   const attacking=['jab','heavy','special','super','low','air','rising','moving','launcher','chain','breaker'].includes(pose);
   const shape=s.shape;
+  if(['octopus','jellyfish'].includes(shape)){
+    const jelly=shape==='jellyfish';
+    for(let i=0;i<(jelly?8:6);i++){const x=6+i*(jelly?5:6),wave=Math.sin(time/240+i)*2;r(ink,x,27,4,10+i%3*3);r(body,x+1,27,2,9+i%3*3);r(body,x+wave,36+i%3*3,5,3);}
+    r(ink,9,10,31,19);r(body,11,8,27,19);r(light,16,5,17,5);r(shade,12,24,26,5);
+    if(jelly){r(ink,18,13,14,13);r('#fff4df',20,15,10,9);r(shade,24,15,4,9);}else{for(const x of [17,29]){r('#fff4df',x,17,7,6);r(ink,x+3,17,3,6);}}
+    return;
+  }
   // Back appendages define the silhouette before the shared face/body anatomy.
   if(['drake','wyrm'].includes(shape)){
     p(ink,[[15,22],[1,10],[3,31],[16,30]]);p(shade,[[13,23],[3,14],[5,28],[15,28]]);

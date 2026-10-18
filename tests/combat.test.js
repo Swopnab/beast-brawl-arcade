@@ -6,10 +6,10 @@ import {cleanProfile,grantReward,equipArena,titleFor} from '../profile.js';
 const idle=()=>[emptyInput(),emptyInput()];
 function advance(s,frames,inputs=idle()){for(let n=0;n<frames;n++)step(s,inputs);}
 function fight(a='ashfang',b='zipcat'){const s=createMatch(a,b,{mode:'online',matchId:'test-match'});advance(s,360);s.fighters[0].x=500;s.fighters[1].x=590;return s;}
-test('30 original fighters have distinct identities and complete move lists',()=>{
-  assert.equal(FIGHTERS.length,30);assert.equal(new Set(FIGHTERS.map(f=>f.id)).size,30);assert.equal(new Set(FIGHTERS.map(f=>f.shape)).size,30);
+test('12 original fighters have distinct identities and complete move lists',()=>{
+  assert.equal(FIGHTERS.length,12);assert.equal(new Set(FIGHTERS.map(f=>f.id)).size,12);assert.equal(new Set(FIGHTERS.map(f=>f.shape)).size,12);
   for(const f of FIGHTERS){for(const [,key]of MOVE_LIST)assert.ok(f.moves[key],`${f.name} missing ${key}`);assert.ok(f.hp>=900&&f.hp<=1250);}
-  assert.equal(new Set(FIGHTERS.map(f=>f.moves.special)).size,30);
+  assert.equal(new Set(FIGHTERS.map(f=>f.moves.special)).size,12);
 });
 test('six-second briefing blocks attacks, then starts exactly on schedule',()=>{
   const s=createMatch('ashfang','zipcat');assert.equal(queueAction(s,0,'q'),false);advance(s,359);assert.equal(s.phase,'briefing');step(s);assert.equal(s.phase,'fight');assert.equal(s.time,3600);
@@ -33,7 +33,7 @@ test('Q Q E creates the unique launcher and launches the opponent',()=>{
 });
 test('Q E R produces an empowered signature move',()=>{
   const s=fight();queueAction(s,0,'q');advance(s,24);queueAction(s,0,'e');advance(s,41);queueAction(s,0,'r');step(s);
-  assert.equal(s.fighters[0].attack.kind,'chain');assert.ok(s.fighters[0].attack.damage>fighter('ashfang').specialDamage);assert.equal(s.fighters[0].lastMove,'Flare Rush EX');
+  assert.equal(s.fighters[0].attack.kind,'chain');assert.ok(s.fighters[0].attack.damage>fighter('ashfang').specialDamage);assert.equal(s.fighters[0].lastMove,'Flare Orb EX');
 });
 test('E E Q produces an unblockable guardbreaker',()=>{
   const s=fight();queueAction(s,0,'e');advance(s,41);queueAction(s,0,'e');advance(s,41);queueAction(s,0,'q');step(s);
@@ -45,7 +45,7 @@ test('directional and aerial attacks have different properties',()=>{
   const moving=fight();queueAction(moving,0,'e',{right:true});step(moving);assert.equal(moving.fighters[0].attack.kind,'moving');assert.ok(moving.fighters[0].x>500);
   const air=fight();air.fighters[0].y=-100;queueAction(air,0,'e');step(air);assert.equal(air.fighters[0].attack.kind,'air');assert.ok(air.fighters[0].vy>0);
 });
-test('all 30 signature specials can damage a reachable rival',()=>{
+test('all 12 signature specials can damage a reachable rival',()=>{
   for(const f of FIGHTERS){const s=fight(f.id,'crysteel'),before=s.fighters[1].hp;queueAction(s,0,'r');advance(s,100);assert.ok(s.fighters[1].hp<before,`${f.name} special failed`);}
 });
 test('Space requires a full meter and consumes it',()=>{
