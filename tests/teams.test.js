@@ -4,7 +4,8 @@ import {FIGHTERS,fighter} from '../fighters.js';
 import {BALANCE,TYPE_CHART,typeMultiplier} from '../balance.js';
 import {createMatch,step,queueAction,emptyInput,validTeam,selectReplacement,resolveTeamKnockout,damageAgainst,livingMembers,TEAM_BOUT_FRAMES} from '../combat.js';
 import {cleanProfile,grantReward} from '../profile.js';
-import {SPRITES,sprite} from '../pixel-sprites.js';
+import {SPRITES,CELL,POSE_COLUMNS} from '../pixel-sprites.js';
+import {readFileSync} from 'node:fs';
 const teams=[['ashfang','reefclaw','glaciop'],['thornox','kilnback','hexeye']];
 function battle(mode='online'){const s=createMatch(...teams,{mode});for(let i=0;i<300;i++)step(s);return s;}
 function ko(s,index){s.fighters[index].hp=0;resolveTeamKnockout(s);}
@@ -48,10 +49,10 @@ test('serialized team snapshots simulate identically through replacements and su
  for(const s of [a,b]){s.fighters[0].hp=0;step(s);selectReplacement(s,0,'reefclaw');for(let i=0;i<120;i++)step(s);s.fighters[0].x=500;s.fighters[1].x=590;queueAction(s,0,'e');for(let i=0;i<25;i++)step(s);}
  assert.deepEqual(a,b);assert.equal(b.teams[1].members[0].hp,b.fighters[1].hp);
 });
-test('all twelve fixed-grid sprites are unique, use a bounded palette and only integer rectangles in every pose',()=>{
- assert.equal(Object.keys(SPRITES).length,12);assert.equal(new Set(Object.values(SPRITES).map(rows=>rows.join())).size,12);
- const c={fillStyle:'',fillRect(...args){assert.ok(args.every(Number.isInteger));}};
- for(const f of FIGHTERS){for(const row of SPRITES[f.id])assert.match(row,/^[.#bshawe]+$/);for(const pose of ['idle','walk','heavy','super','duck','ko'])for(const facing of [-1,1])sprite(c,f,50,90,2,{pose,facing,frame:45});}
+test('twelve detailed fighters have unique atlas rows, four combat poses, and native transparent sprite cells',()=>{
+ assert.equal(CELL,96);assert.equal(Object.keys(SPRITES).length,12);assert.equal(new Set(Object.values(SPRITES).map(s=>`${s.sheet}-${s.row}`)).size,12);
+ for(const f of FIGHTERS){const m=SPRITES[f.id];assert.ok(m);assert.ok(m.row>=0&&m.row<4);const data=readFileSync(new URL(`../assets/art/${m.sheet}.png`,import.meta.url));assert.equal(data.readUInt32BE(16),CELL*4);assert.equal(data.readUInt32BE(20),CELL*4);assert.equal(data[25],6,'RGBA preserves transparency');assert.ok(data.length>10000);}
+ assert.equal(POSE_COLUMNS.idle,0);assert.equal(POSE_COLUMNS.heavy,1);assert.equal(POSE_COLUMNS.hit,2);assert.equal(POSE_COLUMNS.ko,3);
 });
 
 test('a final simultaneous active KO awards victory to the team with a living bench fighter',()=>{

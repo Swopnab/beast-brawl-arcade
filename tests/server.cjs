@@ -9,6 +9,7 @@ exports.serve = async (root) => {
     ".css": "text/css",
     ".svg": "image/svg+xml",
     ".png": "image/png",
+    ".webp": "image/webp",
     ".jpg": "image/jpeg",
     ".ttf": "font/ttf",
     ".json": "application/json",

@@ -1,4 +1,4 @@
-import {BALANCE} from './balance.js?v=10';
+import {BALANCE} from './balance.js?v=12';
 export const ELEMENTS = {
   Ember: { color: '#ff855f', dark: '#872b38', icon: '◆' },
   Tide: { color: '#62d9ed', dark: '#185d89', icon: '≋' },

@@ -55,7 +55,10 @@ async function shot(p, name) {
       );
       for (const id of ["#mode-pvp", "#mode-bot", "#cpu-policy"])
         await fits(p, id, width, height);
-      assert(await p.evaluate(() => document.fonts.check("16px ArcadePixel")));
+      assert(await p.evaluate(() => document.fonts.check("16px RPGPixel")));
+      assert.match(await p.locator('.mode-intro h1').evaluate(el=>getComputedStyle(el).fontFamily),/RPGPixel/);
+      assert.equal(requests.some(u=>u.includes('/art/source/')),false);
+      if(width===320){const atlas=await p.evaluate(async()=>{const im=new Image();im.src='./assets/art/fighters-ember-tide.png';await im.decode();const c=document.createElement('canvas');c.width=384;c.height=384;const ctx=c.getContext('2d');ctx.drawImage(im,0,0);const pixels=ctx.getImageData(0,0,384,384).data,colors=new Set(),alpha=new Set();for(let i=0;i<pixels.length;i+=4){alpha.add(pixels[i+3]);if(pixels[i+3])colors.add([pixels[i],pixels[i+1],pixels[i+2]].join());}return{colors:colors.size,alpha:[...alpha]};});assert.ok(atlas.colors>40&&atlas.colors<=112);assert.deepEqual(atlas.alpha.sort((a,b)=>a-b),[0,255]);}
       await shot(p, `${width}-mode`);
       await p.locator("#mode-bot").click();
       for (const item of await p.locator("[data-stage]").all()) {
@@ -84,6 +87,9 @@ async function shot(p, name) {
         await fits(p, `[data-action="${a}"]`, width, height);
       await shot(p, `${width}-battle`);
       await p.waitForFunction(()=>window.__test.state()?.phase==='fight');
+      await p.evaluate(()=>{const s=window.__test.state();s.fighters[0].x=500;s.fighters[1].x=590;});
+      await p.waitForFunction(()=>Number(document.querySelector('#arena').dataset.fighterPixels)>=60);
+      await shot(p,`${width}-close-combat`);
       await p.evaluate(()=>window.__test.knockout());
       await p.locator('[data-replace="reefclaw"]').waitFor();
       await fits(p,'[data-replace="reefclaw"]',width,height);
