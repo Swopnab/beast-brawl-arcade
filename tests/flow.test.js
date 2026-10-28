@@ -4,7 +4,7 @@ import {canStartOnline,START_SECONDS} from '../flow.js';
 import {createMatch,step,queueAction,emptyInput} from '../combat.js';
 import {readFileSync} from 'node:fs';
 test('online starts only when both characters are chosen and both devices are connected',()=>{
-  const lobby={ids:['ashfang','hexeye'],ready:[false,false],stage:'lobby'};
+  const lobby={ids:['ashfang','hexeye'],teams:[['ashfang'],['hexeye']],ready:[false,false],stage:'lobby'};
   assert.equal(canStartOnline(lobby,true),false);lobby.ready[0]=true;assert.equal(canStartOnline(lobby,true),false);lobby.ready[1]=true;assert.equal(canStartOnline(lobby,false),false);assert.equal(canStartOnline(lobby,true),true);lobby.stage='battle';assert.equal(canStartOnline(lobby,true),false);
 });
 test('bot and online character choices lead to exactly five seconds before combat',()=>{

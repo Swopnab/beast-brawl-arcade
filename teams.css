@@ -1,0 +1,60 @@
+/* A native 320×180 scene, enlarged with nearest-neighbor pixels. */
+canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+.pixel-mode .scene-background{image-rendering:pixelated}
+.pixel-mode .summon-aura,.pixel-mode .rotation-tools{display:none}
+.pixel-mode .preview-art canvas{image-rendering:pixelated}
+.pixel-mode .fighter-card canvas{image-rendering:pixelated}
+.fighter-card.on-team{border-color:#f8ca73;background:#33313b;box-shadow:inset 0 0 0 2px #f8ca73}
+.fighter-card.on-team:after{content:'IN TEAM';position:absolute;top:3px;left:3px;font:7px ArcadePixel;color:#ffdf91;background:#171c2b;padding:3px}
+.fighter-card{position:relative}
+.type-matchup{font:11px/1.6 ArcadePixel;color:#ebd9ac;margin:8px 0}
+.team-builder{width:100%;font:10px/1.5 ArcadePixel}
+.team-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:8px 0}
+.team-slots>span,.team-slots>button{min-height:38px;padding:6px;border:1px solid #697184;background:#171e2d;color:#f7dfac;font:10px ArcadePixel;display:flex;align-items:center;justify-content:space-between;gap:3px}
+.team-slots>button{cursor:pointer}
+.team-buttons{display:flex;gap:8px;justify-content:space-between}
+.team-buttons>button{height:40px;min-height:40px;width:auto;padding:8px 12px;font:11px ArcadePixel}
+#lock-team:disabled{opacity:.5;cursor:default}
+.team-bench{display:flex;gap:4px;font:8px/1.3 ArcadePixel;margin:5px 0;flex-wrap:wrap}
+.team-bench span{padding:3px;border:1px solid #7a8495;color:#cdd1da;background:#131c2e}
+.team-bench .active{border-color:#f6d082;color:#f6d082}
+.team-bench .knocked-out{opacity:.5;text-decoration:line-through}
+.type-feedback{position:absolute;top:31%;left:20%;right:20%;text-align:center;color:#ffe1a1;font:12px ArcadePixel;pointer-events:none;text-shadow:2px 2px #161a2c}
+.fight-overlay.replacement{background:#101827d9;pointer-events:auto;display:flex;align-items:center;justify-content:center;z-index:6}
+.replacement-picker{text-align:center;padding:12px;max-width:90%;font:12px/1.6 ArcadePixel;color:#ffe0a1}
+.replacement-picker>div{display:flex;justify-content:center;gap:12px;margin-top:10px}
+.replacement-picker button{display:flex;flex-direction:column;align-items:center;background:#1c2b40;border:2px solid #8ce2de;color:#fff0ce;padding:8px;cursor:pointer;font:11px/1.6 ArcadePixel;min-width:120px}
+.replacement-picker button:focus-visible{outline:3px solid #f7c778;outline-offset:3px}
+.replacement-picker canvas{width:80px;height:80px}
+.replacement-picker button span{font-size:9px}
+@media(max-width:700px){.team-slots>span,.team-slots>button{font-size:8px;min-height:32px}.team-bench{font-size:6px;gap:2px}.team-bench span{padding:2px}.type-feedback{font-size:8px}.replacement-picker{font-size:10px}.replacement-picker button{min-width:90px;font-size:9px}.replacement-picker canvas{width:52px;height:52px}.type-matchup{font-size:9px}}
+@media(max-height:500px) and (orientation:landscape){.team-slots{margin:3px 0}.team-slots>span,.team-slots>button{min-height:26px;padding:3px;font-size:8px}.team-buttons>button{min-height:28px;height:28px;font-size:9px}.team-builder>span{font-size:8px}.type-matchup{font-size:8px;margin:3px 0}.team-bench{margin:2px 0;font-size:6px}.replacement-picker canvas{width:44px;height:44px}.replacement-picker{padding:6px;font-size:10px}}
+.pick-to-play{flex-basis:auto;flex-shrink:0}
+.pixel-mode .ready-countdown,.pixel-mode .fight-overlay{backdrop-filter:none}
+.pixel-mode #scene-background{image-rendering:pixelated}
+@media(max-width:620px) and (orientation:portrait){
+ .pixel-mode .preview-art{inset:20px 0 95px}
+ .pixel-mode .fighter-details{bottom:5px}
+ .pixel-mode .fighter-preview h2{font-size:21px}
+ .pixel-mode .selected-stats{display:flex;gap:10px;margin-top:5px;margin-right:70px}
+ .pixel-mode .stat{flex:1;min-width:0}
+ .pixel-mode .stat>span,.pixel-mode .stat>strong{font:6px ArcadePixel}
+ .pixel-mode .fighter-extra{bottom:31px}
+ .pixel-mode .type-matchup{font:7px/1.8 ArcadePixel;white-space:normal;max-width:100%;margin:5px 0 0}
+ .pixel-mode .fighter-extra>.outline-button{min-height:26px;font-size:7px;padding:5px}
+ .fighter-card.on-team:after{font-size:5px;padding:2px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .pixel-mode .preview-art{inset:17px 0 75px}
+ .pixel-mode .fighter-preview h2{font-size:16px}
+ .pixel-mode .fighter-details{bottom:4px;right:4px}
+ .pixel-mode .selected-stats{display:flex;gap:8px;margin-top:4px}
+ .pixel-mode .stat{flex:1;min-width:0}
+ .pixel-mode .stat>span,.pixel-mode .stat>strong{font:6px ArcadePixel}
+ .pixel-mode .type-matchup{font:6px/1.5 ArcadePixel;max-width:100%;margin:4px 0 0}
+ .pixel-mode .fighter-extra{top:0;right:0;bottom:auto}
+ .pixel-mode .fighter-extra>.outline-button{font:6px ArcadePixel;padding:3px;min-height:22px}
+ .team-builder>span{display:none}.team-slots{margin:2px 0}.team-slots>span,.team-slots>button{min-height:23px;font-size:6px}
+ .team-buttons>button{min-height:25px;height:25px;font-size:7px}
+ .fighter-card.on-team:after{font-size:4px;padding:1px}
+}

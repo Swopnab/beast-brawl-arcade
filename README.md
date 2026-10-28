@@ -1,173 +1,117 @@
-# BEAST BRAWL / 3D ARCADE
+# BEAST BRAWL / PIXEL ARCADE
 
-**Five worlds. Twelve fighters. Your rules.** A separate, quick-start edition of Beast Brawl. An original 3D arcade fighting game with 12 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
+An original 2D creature fighter: twelve fixed-grid sprites, five pixel-art arenas, teams of up to three, online rooms, and local CPU practice.
 
-## Arcade interface and trained practice opponent
+**[Play Beast Brawl](https://swopnab.github.io/beast-brawl-arcade/)**
 
-The interface now uses locally bundled pixel lettering, gold headings, cyan controls and solid arcade panels, matching CyberSteer's visual direction while keeping Beast Brawl's own creatures and stages. The existing combat rules, online rooms, rewards and touch controls remain.
+## Play a team match
 
-Choose **Trained CPU** or **Classic CPU** under Practice opponent, then select **CPU Practice**, an arena and a fighter. The trained CPU uses a small offline-trained PyTorch network exported to browser-readable weights. It imitates a scripted coach on synthetic combat states; it is not reinforcement learning or a human-trained opponent. The classic CPU remains available if the model cannot load. No paid AI API or Python server is used during play.
+1. Choose **CPU Practice** or **Online Match**. Online hosts share the room link; guests can paste a room code or open an invite.
+2. Choose an arena. Online guests use the host’s arena.
+3. Click one to three distinct fighters in the order you want them. The first pick starts. Click a selected fighter or its team slot to remove it. **Random** fills three slots without starting a match.
+4. Press **Start** or **Ready**. Both online teams must be ready and connected. A five-second briefing precedes combat.
+5. After a knockout, the losing side chooses a living reserve. Combat and the timer pause during that choice. The surviving active fighter keeps its health and energy. Positions and temporary attack/defense states reset; a two-second countdown resumes combat.
+6. Eliminate the whole opposing team to win. There is no voluntary switching or revival. A CPU team has the same number of fighters as yours; online players can each choose one to three.
 
-- [Understand the tools and reproduce the ML pipeline](docs/AI-LEARNING-GUIDE.md)
-- [Accurate resume wording and what you should be able to explain](docs/RESUME-NOTES.md)
-- [Measured classifier results](evaluation/practice-policy.json) and [controlled game simulations](evaluation/policy-simulation.json)
+Each active bout lasts 90 seconds. At time-out, the active fighter with lower health percentage is knocked out. Equal percentages knock out both active fighters. Both sides then choose reserves if available; simultaneous elimination of both complete teams is a draw. Rewards are granted once for the completed team match. Leaving early earns nothing.
 
-## Play
+The CPU picks its surviving reserve by elemental advantage. This reserve choice is a transparent rule; the trained neural network controls active combat only.
 
-**[Choose your battleground →](https://swopnab.github.io/beast-brawl-arcade/)**
+## Roles and elemental matchups
 
-Choose **Online Match** or **CPU Practice** first. Then choose a background, then click a creature. The chosen creature’s name is your player name. There is no account, nickname field, final setup form, or separate confirmation button.
+Every fighter has 1,000 health, the same reach and the same collision footprint. Each receives ten rating points across attack, defense and speed. Higher attack costs defense or mobility; tanks hit less hard, and fast fighters give up durability or damage. Ratings appear during selection. The roster’s existing unique ultimates remain.
 
-- **Bot:** clicking a character starts the five-second countdown immediately, with a random rival and the selected CPU policy.
-- **Online:** the PvP button creates a room automatically. Share the invite shown above the game; friends opening it choose PvP to join directly. A room code can also be entered from the first page. The host chooses the shared background, and both players choose a creature. As soon as both characters are chosen, a synchronized five-second countdown starts automatically. No separate ready/start button is needed.
-- Hover a creature or use arrow keys to preview it on a laptop. Click, tap, or press Enter to choose it and start. Random chooses a character and starts too. The preview rotation and move-list buttons remain available before choosing.
-- Chat is available through the **Chat** button in an online room. Messages stay in the room and are not saved after it ends.
+| Fighter | Role | Attack | Defense | Speed |
+| --- | --- | ---: | ---: | ---: |
+| Ashfang | Glass cannon | 5 | 2 | 3 |
+| Kilnback | Tank | 2 | 5 | 3 |
+| Reefclaw | Tank | 2 | 5 | 3 |
+| Inkveil | Striker | 4 | 2 | 4 |
+| Zipcat | Speedster | 3 | 2 | 5 |
+| Boltstag | Duelist | 4 | 3 | 3 |
+| Thornox | Bruiser | 3 | 4 | 3 |
+| Petalmoth | Glass cannon | 5 | 2 | 3 |
+| Hexeye | Controller | 3 | 3 | 4 |
+| Nullwyrm | Striker | 4 | 2 | 4 |
+| Glaciop | Speedster | 3 | 2 | 5 |
+| Crysteel | Tank | 2 | 5 | 3 |
 
-The five free worlds are **Caldera Rift** (volcano), **Azure Falls** (water), **Rainline City** (rain), **Sunscorch Dunes** (sunny desert), and **Verdant Ruins** (jungle). The selected scenery stays behind character selection and becomes the battle arena.
+Attack power is `0.75 + 0.1 × attack`; defense is `0.75 + 0.1 × defense`; movement speed is `2.5 + 0.5 × speed`. Impact damage is rounded after multiplying base damage by the element multiplier and dividing by defense (and halved again for armored ultimates). Q has one quarter of E base damage; rounding can slightly change their final ratio.
 
-The screens adapt to phone, tablet, laptop, and desktop dimensions without page scrolling. Portrait and landscape layouts keep the twelve creature choices and touch controls accessible. Safe-area spacing keeps controls clear of notches and home indicators. Browsers with touch input show the touch joystick even on larger tablets; keyboard controls remain available. Menus and chat have bounded reading areas.
+Every element has two favorable, two unfavorable, and one neutral matchup against other elements. Same-element hits are neutral. All moves inherit their fighter’s element. Reflected shots retain their original element and base damage.
 
-All 12 characters, names, creature designs, backgrounds, and move sets were created for this game. Each creature has its own anatomy, proportions, size, and limb animation. The 3D edition uses original procedural low-poly models, layered geometry, lighting, shadows, animated weather, and 3D combat effects. Drag the selected creature or use the rotation buttons to inspect it. No official Pokémon, Street Fighter characters, ripped sprites, or third-party game artwork are used. The five stage backgrounds, roster portraits, selected creature, and battles render in real 3D using bundled Three.js 0.186.1. Fighting follows the same side-view rules, with a camera that follows and moves closer as fighters approach. It is a 3D presentation with side-view movement. Browsers without WebGL 2 automatically use the previous illustrated Canvas renderer.
+| Attacking element | Deals 2× damage to | Deals ½× damage to |
+| --- | --- | --- |
+| Fire | Grass, Ice | Water, Shadow |
+| Water | Fire, Shadow | Grass, Electric |
+| Grass | Water, Electric | Fire, Ice |
+| Electric | Water, Ice | Grass, Shadow |
+| Ice | Grass, Shadow | Fire, Electric |
+| Shadow | Fire, Electric | Water, Ice |
 
-## Fullscreen, music, and effects
+This is an original six-element game chart, not the full rules of another franchise. The selection screen shows the current fighter’s matchups; the battle displays effective/resisted hit feedback.
 
-Press **⛶** in the top right for fullscreen in supported browsers; press it again or Escape to leave. The **⚙** menu independently controls music volume, sound effect volume, both mute switches, and scenery/camera motion. Preferences stay on this device. The original eight-bar adventure soundtrack is enabled by default and begins on the first click, tap, or keypress because browsers require interaction to start sound. Music pauses when the tab is hidden. Scenery motion can also be disabled independently of combat animations.
+[evaluation/roster-balance.json](evaluation/roster-balance.json) records 132 ordered one-fighter bouts using the same scripted coach on both sides. Each fighter wins and loses matchups; results range from 9–13 to 13–9 over 22 bouts. This deterministic check catches gross problems; it does not establish human competitive balance.
 
-Elemental effects include fireballs with ember trails, pressure-cannon water jets, forked lightning, leaf bursts and vines, void spirals, and ice shards. Ashfang’s Q throws **Flare Orb**; Inkveil’s Q fires **Pressure Cannon**. Other techniques show elemental charge, impact, and ground effects. These are real combat effects associated with damaging attacks, rather than decoration added to the menus.
+## True 2D pixel presentation
+
+`pixel-sprites.js` contains twelve original character grids and their limited palettes. `pixel-graphics.js` draws the five arenas, sprite poses, projectiles and impacts to a native **320×180** Canvas, enlarged with image smoothing disabled. Idle, walking, ducking, attacking, hit and KO poses use grid pixels. The same sprites appear in menus, portraits and reserve choices. There are no active 3D models, WebGL renderer or Three.js requests. Legacy 3D/illustrated source files and licenses remain in the repository for history; the current app does not load them.
+
+The free arenas are Caldera Rift, Azure Falls, Rainline City, Sunscorch Dunes and Verdant Ruins. Original artwork, names and moves are authored for this game; no ripped commercial game sprites are used. Local pixel lettering, fullscreen, phone/tablet layouts, touch controls and reduced-motion settings remain available.
 
 ## Controls
 
-| Command          | Action                                                                                                                  |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| A / D            | Move left / right                                                                                                       |
-| W                | Jump                                                                                                                    |
-| S                | Duck; lower your hurtbox to evade Q shots (no passive block)                                                            |
-| Q                | Ranged projectile; exactly one quarter of basic E damage                                                                |
-| E                | Fast close-combat strike; 22-frame recovery                                                                             |
-| R                | Timed deflect: 8 frames to parry melee or reflect a projectile; 40-frame cooldown                                       |
-| Q + E + Space    | Press together at 100% energy for your creature-specific ultimate (Space alone or the touch ultimate button also works) |
-| S + E            | Low sweep                                                                                                               |
-| W + E            | Rising melee                                                                                                            |
-| E while airborne | Diving melee                                                                                                            |
-| A or D + E       | Moving melee                                                                                                            |
-| E → E            | Two consecutive landed melee hits within 1.5 seconds push your opponent away                                            |
-| E → E → E        | Skybreaker: launching melee finisher                                                                                    |
-| E → E → S+E      | Low Finish: ducking combo sweep                                                                                         |
-| Successful R → E | Counter within 0.75 seconds; 150% basic melee damage                                                                    |
+| Input | Action |
+| --- | --- |
+| A / D | Move |
+| W / S | Jump / duck |
+| Q | Ranged attack |
+| E | Melee attack |
+| R | Timed deflect: 8-frame window; 40-frame cooldown |
+| Q + E + Space | Unique ultimate at full energy; Space and touch ultimate are shortcuts |
+| S + E / W + E | Low sweep / rising strike |
+| Air + E / Moving + E | Diving / moving strike |
+| E → E | Two landed hits within 1.5 seconds push the rival away |
+| E → E → E | Launcher |
+| E → E → S + E | Low finisher |
+| Successful R → E | Counter within 0.75 seconds |
 
-Each creature has **12 named move commands**. Open **Your move list** to see the selected creature’s exact attack names and descriptions. Combos must be entered within 2.5 seconds; time each input as the preceding animation finishes. The last quarter-second of an animation accepts buffered inputs. Pressing every key simultaneously is not a successful combo.
+Touch devices have a movement joystick and multi-touch attack buttons. Opening a local dialog pauses CPU combat. Fullscreen uses the top-right button where supported. Settings control music, effects and scenery motion. Audio starts after interaction, pauses when hidden, and uses local synthesis.
 
-Phones, iPads, and other touchscreens have a thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to duck; diagonals combine movement with jumping or ducking. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
+## Trained practice opponent
 
-## Match rules
+Choose **Trained CPU** or **Classic CPU** before starting practice. The trained CPU uses an offline-trained PyTorch network exported as small browser-readable weights. It imitates a scripted coach on synthetic combat states. It is not reinforcement learning, an LLM or a model trained on human gameplay. The classic CPU works if weights cannot load. No paid API or Python server is needed to play.
 
-Each round lasts 60 seconds. Knock out your rival, or finish the round with the higher remaining **health percentage**. Equal health is a draw. Win two rounds to win the match; after a maximum of three rounds, whoever has more round wins takes the match. Equal round wins produce a match draw. Rounds advance automatically.
+- [Understand and reproduce the Python, PyTorch and Pandas pipeline](docs/AI-LEARNING-GUIDE.md)
+- [Honest resume wording](docs/RESUME-NOTES.md)
+- [Held-out classifier metrics](evaluation/practice-policy.json)
+- [Current active-combat simulations](evaluation/policy-simulation.json)
 
-Movement runs 18% faster than the previous edition at a fixed 60 simulation steps per second. Melee attacks recover in 22 frames; ranged pokes take 44. Q damage is exactly 25% of each creature’s basic E damage. Melee hits build 12 energy, ranged hits only 2, and a deflect builds 8. The bot actively closes to melee range and uses ranged attacks sparingly.
+The existing model is retained; active-combat simulations have been rerun with the new stat/type rules. Classification metrics describe the original synthetic training distribution. Team strategy has not been learned or evaluated as a neural policy.
 
-Hold S to duck under ranged shots; ducking does not reduce damage from strikes that connect. W jumps over sweeps and ordinary punches; rising attacks intercept airborne opponents. Tap R immediately before impact for an 8-frame deflect. It reflects Q shots at their original damage or parries a melee strike and interrupts its attacker. Missed deflects leave a recovery window and cannot be spammed. A successful deflect opens 45 frames (0.75 seconds) to press E for a counter dealing 150% basic melee damage. Ultimates can also be parried. Both players’ defensive inputs are resolved before hit detection.
+## Multiplayer and progression
 
-Energy builds through combat and slowly over time. Space consumes the full meter for a unique ultimate. All ultimates operate at close range; each has its own movement, hit pattern, animation, and visual effect. Hit detection uses creature-specific heights and the lower ducking hurtbox.
+PeerJS handles room discovery and encrypted browser-to-browser WebRTC data channels. The host simulates all combat at 60 steps per second and broadcasts snapshots. Guests submit validated inputs, team picks and reserve IDs; they cannot submit health or damage. A reserve request always applies to the guest’s own seat and must name one of its living team members. Protocol version 3 prevents mixing old single-fighter clients with team clients.
 
-## The original roster
+A disconnected guest pauses combat. Rejoining the same tab with its existing invite/code restores its seat, active fighter, reserves and health. A host refresh ends the room. The host tab must remain open and visible; background tabs can be suspended. Public signaling/relay availability and network restrictions can affect connections. This is casual host-authoritative multiplayer, not a secure ranked service.
 
-| Element | Creatures                                                                              |
-| ------- | -------------------------------------------------------------------------------------- |
-| Ember   | Ashfang — winged dragon; Kilnback — four-legged furnace tortoise                       |
-| Tide    | Reefclaw — broad, six-legged crab; Inkveil — six walking tentacles                     |
-| Volt    | Zipcat — tiny four-legged sprinter; Boltstag — tall four-legged stag                   |
-| Wild    | Thornox — massive four-legged root beast; Petalmoth — floating wings                   |
-| Void    | Hexeye — floating bell, one eye and eight tendrils; Nullwyrm — floating cosmic serpent |
-| Frost   | Glaciop — small two-legged hopper; Crysteel — giant two-legged crystal titan           |
+Completed matches grant browser-local XP and shards once. Titles and cosmetic arena trim can be unlocked; no stat upgrades or paid boosts exist. All characters and all five stages are free. No accounts, API keys, paid services, advertising or analytics were added.
 
-| Creature  | Space ultimate       | Behavior                             |
-| --------- | -------------------- | ------------------------------------ |
-| Ashfang   | Dragonfall           | Forward aerial dive and launch       |
-| Kilnback  | Core Meltdown        | Armored radial furnace eruption      |
-| Reefclaw  | Reef Wrecker         | Point-blank pincer grab              |
-| Inkveil   | Ocean Eclipse        | Three tentacle strikes               |
-| Zipcat    | Nine Lives Overdrive | Five advancing electric hits         |
-| Boltstag  | Thunder Coronation   | Rising antler launch                 |
-| Thornox   | Forest Stampede      | Armored charging horn strike         |
-| Petalmoth | Bloomstorm           | Two radial petal pulses              |
-| Hexeye    | Soul Parade          | Three pulses with health siphon      |
-| Nullwyrm  | Singularity          | Nearby gravity pull then implosion   |
-| Glaciop   | Avalanche Ballet     | Three advancing aerial kicks         |
-| Crysteel  | Absolute Zero        | Two crystal hits with a brief freeze |
-
-Elements identify visual style and move sets; there is no hidden type-advantage system.
-
-## Rewards
-
-| Result |  XP | Shards |
-| ------ | --: | -----: |
-| Win    | 120 |     50 |
-| Draw   |  65 |     25 |
-| Loss   |  45 |     15 |
-
-Completed bot and online matches both count. Leaving early earns nothing. Earn five titles through XP, and spend shards on **Forge Glow**, **Jade Glow**, and **Storm Glow** lighting palettes. Arcade Lime is free. These tint the arena floor effect; the five stage backgrounds remain free. All 12 creatures remain available from the start, with no paid boosts.
-
-Rewards, titles, and arena purchases are stored in this browser’s local storage. An equipped lighting palette changes your own view. Clearing browser data resets progression. Rewards have no monetary value and are not a secure global ranking system.
-
-## Local development
-
-Requires Node.js 22+ for development checks and Python 3 for the local server. Playing the static game requires no build or runtime package installation. Install development-only browser test packages with `npm ci`.
+## Run and verify
 
 ```sh
-npm run dev
-# http://127.0.0.1:4320
-
 npm ci
-npx playwright install chromium --only-shell
+npm run dev
 npm run check
 npm test
+npx playwright install chromium
 npm run test:browser
+node ml/evaluate-balance.mjs
+node ml/evaluate.mjs
 ```
 
-The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 unique ultimates, the exact ranged/melee damage ratio, ducking, timed parries, projectile ownership on reflection, counter expiry, melee-focused bot behavior, the five-second countdown, two-player readiness, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
+Open the local address shown by the development server. Browser tests cover seven phone/tablet/desktop sizes, team picks, touch controls, settings/dialog flows, CPU damage and missing-model fallback. A second two-page test uses real local RTCDataChannels with test-only local signaling to check online team readiness, authoritative reserves, health carryover, reconnects and final results. Public PeerJS signaling availability is not asserted by that local test. Unit checks cover type chart symmetry, stats, KO/time-out cases, team validation, replacement ownership, snapshot determinism, combat and rewards.
 
-## Multiplayer and hosting
+GitHub Actions runs syntax, unit and browser checks. GitHub Pages serves the root of `main` with `.nojekyll`.
 
-GitHub Pages serves the root of `main`; `.nojekyll` enables plain static hosting. A GitHub Actions workflow runs checks and tests on pushes and pull requests.
-
-The bundled **PeerJS 1.5.5** library establishes encrypted WebRTC data channels through PeerJS Cloud signaling and the library’s default STUN/TURN configuration. No account, microphone, API key, game server installation, or paid service is required.
-
-The host simulates combat at a fixed 60 steps per second and broadcasts snapshots. Guests submit movement and validated attack commands, not health, energy, rewards, or damage values. Guest positions are smoothed between snapshots. Room codes are random and unlisted; private session capabilities let the original guest refresh and rejoin the same seat. A disconnected rival pauses the match until reconnection. The host must stay in the room.
-
-### Practical limits
-
-- **Keep the host’s tab open and visible.** Background tabs and mobile browsers can suspend animation; a suspended host stalls the match. Returning to the foreground resumes simulation.
-- If a guest refreshes, use the existing invite/code and rejoin in the same tab to restore the seat. A host refresh ends the room.
-- Free signaling and relay services are external dependencies. Some school/work networks block peer connections. Try another network if a room cannot connect.
-- This is a casual host-authoritative game, with host latency advantage and no rollback netcode, account-based anticheat, or competitive matchmaking. The host is trusted. Do not use it for wagers or secure ranked tournaments.
-- Bot difficulty changes reaction cadence and defensive behavior. Bot opponents are clearly labeled.
-- Original 3D creatures and worlds are generated locally; the illustrated fallback uses Canvas. Optional Google Fonts has system fallbacks. No advertising or analytics is included.
-
-## Source layout
-
-- `fighters.js` — original roster, stats, moves, elements, arenas, and titles.
-- `combat.js` — authoritative combat, AI, combos, timing, and round resolution.
-- `graphics3d.js` — WebGL rendering, preview rotation, portraits, combat camera, and effects.
-- `creatures3d.js` — 12 original procedural sculptures and animated limbs.
-- `worlds3d.js` — five lit 3D arenas and weather.
-- `scene-data.js` — shared world coordinates and palettes.
-- `art.js` — original illustrated creature sprites and fallback combat effects.
-- `stages.js` — five original layered Canvas worlds and animated weather.
-- `joystick.js` — radial movement mapping, pointer capture, and safe release.
-- `arcade.css` — stage-first arcade selection and glass touch controls.
-- `network.js` — room connections, seat capabilities, and reconnection.
-- `profile.js` — browser-local progression and cosmetic purchases.
-- `app.js` — selection, fullscreen, controls, settings, synchronized briefing, HUD, chat, and rewards UI.
-- `audio.js` — original synthesized adventure soundtrack, sound buses, and volume preferences.
-- `flow.js` / `flow.css` — mode-first entry, automatic readiness, five-second start, and responsive setup.
-- `viewport.css` — responsive screens that fit the display without page scrolling.
-- `tests/` — meaningful game-state and progression checks.
-- `vendor/` — pinned PeerJS build and its MIT license.
-
-Made by Swopnab Bikram Karki with Codex. MIT licensed; the bundled PeerJS and Three.js MIT licenses are preserved separately.
-
-## Fighting gear and final combat polish
-
-All twelve creatures wear gear matched to their anatomy: boxing gloves for Ashfang, Glaciop, and Crysteel; forepaw gauntlets for Kilnback; paw mitts for Zipcat; pincer guards for Reefclaw; six tentacle cuffs for Inkveil; horn pads for Boltstag and Thornox; wing guards for Petalmoth; spectral guard orbs for Hexeye; and a padded comet tail weight for Nullwyrm. Gear follows the relevant limbs and is also represented in illustrated mode.
-
-At full energy a 90ms input window recognizes Q + E + Space in any order without accidentally launching ordinary attacks first. Space alone and the touch ultimate button remain accessible shortcuts. Two consecutive connected E strikes within 1.5 seconds produce stronger pushback. Misses, non-melee attacks, getting hit, and parries reset the pair.
+Made by Swopnab Bikram Karki with Codex. MIT licensed. Bundled library licenses remain with their sources.

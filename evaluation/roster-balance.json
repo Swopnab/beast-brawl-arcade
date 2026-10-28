@@ -1,0 +1,1387 @@
+{
+  "method": "132 ordered single-fighter bouts. Both sides use the same scripted coach every eight ticks; each pairing runs in both seats. Includes elemental matchups. A deterministic smoke test, not human balance evidence or a competitive win rate.",
+  "stats": {
+    "ashfang": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    },
+    "kilnback": {
+      "wins": 13,
+      "losses": 9,
+      "draws": 0
+    },
+    "reefclaw": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    },
+    "inkveil": {
+      "wins": 10,
+      "losses": 12,
+      "draws": 0
+    },
+    "zipcat": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    },
+    "boltstag": {
+      "wins": 9,
+      "losses": 13,
+      "draws": 0
+    },
+    "thornox": {
+      "wins": 12,
+      "losses": 10,
+      "draws": 0
+    },
+    "petalmoth": {
+      "wins": 12,
+      "losses": 10,
+      "draws": 0
+    },
+    "hexeye": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    },
+    "nullwyrm": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    },
+    "glaciop": {
+      "wins": 10,
+      "losses": 12,
+      "draws": 0
+    },
+    "crysteel": {
+      "wins": 11,
+      "losses": 11,
+      "draws": 0
+    }
+  },
+  "runs": [
+    {
+      "left": "ashfang",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 750,
+      "health": [
+        920,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 1046,
+      "health": [
+        680,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 942,
+      "health": [
+        515,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 678,
+      "health": [
+        867,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 710,
+      "health": [
+        855,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 582,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 494,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 982,
+      "health": [
+        558,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 958,
+      "health": [
+        515,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "ashfang",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 694,
+      "health": [
+        960,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 1160,
+      "health": [
+        878,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        926,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 686,
+      "health": [
+        966,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 774,
+      "health": [
+        963,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 1062,
+      "health": [
+        866,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        926,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "kilnback",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 630,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 630,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 774,
+      "health": [
+        809,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 1158,
+      "health": [
+        370,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 1182,
+      "health": [
+        411,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 1278,
+      "health": [
+        261,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 1062,
+      "health": [
+        600,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 774,
+      "health": [
+        825,
+        0
+      ]
+    },
+    {
+      "left": "reefclaw",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 838,
+      "health": [
+        909,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 774,
+      "health": [
+        880,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "zipcat",
+      "winner": 1,
+      "ticks": 3603,
+      "health": [
+        0,
+        127
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 998,
+      "health": [
+        515,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 1104,
+      "health": [
+        27,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 958,
+      "health": [
+        684,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 566,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 694,
+      "health": [
+        867,
+        0
+      ]
+    },
+    {
+      "left": "inkveil",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 774,
+      "health": [
+        880,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 710,
+      "health": [
+        842,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 910,
+      "health": [
+        520,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 550,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 742,
+      "health": [
+        855,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "thornox",
+      "winner": 1,
+      "ticks": 3763,
+      "health": [
+        0,
+        36
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 998,
+      "health": [
+        684,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 1086,
+      "health": [
+        293,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 990,
+      "health": [
+        515,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 550,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "zipcat",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 550,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 710,
+      "health": [
+        857,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 798,
+      "health": [
+        891,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 707,
+      "health": [
+        880,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "thornox",
+      "winner": 1,
+      "ticks": 1139,
+      "health": [
+        0,
+        72
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "petalmoth",
+      "winner": 1,
+      "ticks": 4523,
+      "health": [
+        0,
+        200
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        600,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 982,
+      "health": [
+        737,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "boltstag",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 966,
+      "health": [
+        643,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "kilnback",
+      "winner": 1,
+      "ticks": 5096,
+      "health": [
+        0,
+        117
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 534,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 526,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 734,
+      "health": [
+        870,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 694,
+      "health": [
+        926,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 726,
+      "health": [
+        880,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 982,
+      "health": [
+        708,
+        0
+      ]
+    },
+    {
+      "left": "thornox",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 1110,
+      "health": [
+        736,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 926,
+      "health": [
+        768,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 1030,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 494,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 636,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 628,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 624,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 892,
+      "health": [
+        823,
+        0
+      ]
+    },
+    {
+      "left": "petalmoth",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 1030,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 550,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 1182,
+      "health": [
+        746,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 1022,
+      "health": [
+        870,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 542,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 734,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 640,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 640,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        680,
+        0
+      ]
+    },
+    {
+      "left": "hexeye",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 1182,
+      "health": [
+        746,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 1166,
+      "health": [
+        440,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        515,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 486,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 742,
+      "health": [
+        912,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 726,
+      "health": [
+        842,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 750,
+      "health": [
+        867,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 998,
+      "health": [
+        558,
+        0
+      ]
+    },
+    {
+      "left": "nullwyrm",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 1166,
+      "health": [
+        440,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 950,
+      "health": [
+        536,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "kilnback",
+      "winner": 1,
+      "ticks": 1064,
+      "health": [
+        0,
+        81
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 742,
+      "health": [
+        912,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 638,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 950,
+      "health": [
+        612,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 986,
+      "health": [
+        574,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "glaciop",
+      "right": "crysteel",
+      "winner": 0,
+      "ticks": 742,
+      "health": [
+        912,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "ashfang",
+      "winner": 0,
+      "ticks": 1014,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "kilnback",
+      "winner": 0,
+      "ticks": 1294,
+      "health": [
+        513,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "reefclaw",
+      "winner": 0,
+      "ticks": 846,
+      "health": [
+        933,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "inkveil",
+      "winner": 0,
+      "ticks": 686,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "zipcat",
+      "winner": 0,
+      "ticks": 1030,
+      "health": [
+        866,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "boltstag",
+      "winner": 0,
+      "ticks": 1094,
+      "health": [
+        853,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "thornox",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "petalmoth",
+      "winner": 0,
+      "ticks": 518,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "hexeye",
+      "winner": 0,
+      "ticks": 558,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "nullwyrm",
+      "winner": 0,
+      "ticks": 510,
+      "health": [
+        1000,
+        0
+      ]
+    },
+    {
+      "left": "crysteel",
+      "right": "glaciop",
+      "winner": 0,
+      "ticks": 686,
+      "health": [
+        1000,
+        0
+      ]
+    }
+  ]
+}

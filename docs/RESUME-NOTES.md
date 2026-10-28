@@ -1,6 +1,6 @@
 # Resume wording after you can reproduce and explain the work
 
-The current game genuinely uses Three.js, PeerJS and WebRTC. They are graphics/networking tools, not AI frameworks. There is no need to list every library in a project subtitle.
+The current pixel edition uses Canvas, PeerJS and WebRTC. Three.js rendered the earlier edition and is no longer loaded. They are graphics/networking tools, not AI frameworks. There is no need to list every library in a project subtitle.
 
 A focused project entry can use:
 

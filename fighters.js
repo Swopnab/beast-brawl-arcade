@@ -1,3 +1,4 @@
+import {BALANCE} from './balance.js?v=10';
 export const ELEMENTS = {
   Ember: { color: '#ff855f', dark: '#872b38', icon: '◆' },
   Tide: { color: '#62d9ed', dark: '#185d89', icon: '≋' },
@@ -61,20 +62,21 @@ export const FIGHT_GEAR=Object.freeze({
 });
 export const FIGHTERS = rows.map((r, index) => {
   const [id,name,element,shape,tagline,bio,hp,speed,jump,power,jab,heavy,special,kind,superName,specialDamage] = r;
-  return Object.freeze({id,name,element,shape,tagline,bio,hp,speed,jump,power,index,anatomy:Object.freeze(ANATOMY[id]),
+  const stats=BALANCE[id];
+  return Object.freeze({id,name,element,shape,tagline,bio,hp:1000,speed:2.5+stats.mobility*.5,jump:13+stats.mobility*.3,power:.75+stats.attack*.1,defense:.75+stats.defense*.1,ratings:stats,role:stats.role,index,anatomy:Object.freeze(ANATOMY[id]),
     color:ELEMENTS[element].color,dark:ELEMENTS[element].dark,
     accent:['#fff0b3','#ffe5df','#d8d2ff','#f2fff0','#ffb6cd'][index % 5],
     ultimate:Object.freeze(ULTIMATES[id]),gear:Object.freeze(FIGHT_GEAR[id]),
     moves:{jab,heavy,ranged:RANGED_NAMES[index],special:RANGED_NAMES[index],super:superName,deflect:jab.split(' ')[0]+' Deflect',counter:heavy.split(' ')[0]+' Reversal',pushback:heavy.split(' ')[0]+' Pushback',
       low:jab.split(' ')[0]+' Sweep',air:heavy.split(' ')[0]+' Dive',rising:'Rising '+heavy,
       moving:special.split(' ')[0]+' Shoulder',launcher:heavy.split(' ')[0]+' Skybreaker',chain:special+' EX',breaker:jab.split(' ')[0]+' Low Finish'},kind,specialDamage,
-    reach:88 + (index % 5) * 5,
+    reach:103,
     combo:`${heavy} → ${heavy} → ${heavy.split(' ')[0]} Skybreaker`
   });
 });
 export const fighter = id => FIGHTERS.find(f => f.id === id) || FIGHTERS[0];
 export const MOVE_LIST = [
-  ['Q','ranged','Ranged poke: exactly 25% of your basic E damage. Slow recovery; duck, jump, or reflect it.'],['E','heavy','Fast close-combat strike. Your main source of damage and energy.'],
+  ['Q','ranged','Ranged poke: 25% of E base damage before defense and type rounding. Slow recovery; duck, jump, or reflect it.'],['E','heavy','Fast close-combat strike. Your main source of damage and energy.'],
   ['R','deflect','Tap just before impact: an 8-frame window parries melee or reflects a projectile. Misses leave you exposed.'],['Q + E + SPACE','super','Press together at 100 energy for your unique ultimate. Space alone and the touch ultimate button are shortcuts.'],
   ['S + E','low','Duck into a low sweep. Jump over sweeps to evade them.'],['W + E','rising','Rising melee strike. Catches airborne opponents.'],
   ['AIR + E','air','Diving strike. Punish an opponent below you.'],['A/D + E','moving','Forward-moving heavy. Close the distance.'],

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {FIGHTERS,MOVE_LIST,fighter} from '../fighters.js';
-import {createMatch,step,queueAction,emptyInput,rewardFor,meleeDamage} from '../combat.js';
+import {createMatch,step,queueAction,emptyInput,rewardFor,meleeDamage,damageAgainst} from '../combat.js';
 import {cleanProfile,grantReward,equipArena,titleFor} from '../profile.js';
 const idle=()=>[emptyInput(),emptyInput()];
 function advance(s,frames,inputs=idle()){for(let n=0;n<frames;n++)step(s,inputs);}
@@ -18,11 +18,11 @@ test('movement, jump, and arena bounds work',()=>{
   const s=fight();advance(s,60,[{left:true,jump:true},emptyInput()]);assert.ok(s.fighters[0].x<500);assert.ok(s.fighters[0].y<0);
   advance(s,600,[{left:true},emptyInput()]);assert.equal(s.fighters[0].x,60);assert.equal(s.fighters[0].y,0);
 });
-test('Q deals exactly one quarter of E damage for every creature',()=>{
-  for(const spec of FIGHTERS){const losses={};for(const action of ['q','e']){const s=fight(spec.id,'crysteel'),hp=s.fighters[1].hp;queueAction(s,0,action);advance(s,50);losses[action]=hp-s.fighters[1].hp;}assert.ok(losses.e>0,spec.name);assert.equal(losses.q/losses.e,.25,spec.name);}
+test('Q uses quarter base damage and applies defense/types with integer rounding',()=>{
+  for(const spec of FIGHTERS){const losses={};for(const action of ['q','e']){const s=fight(spec.id,'crysteel'),hp=s.fighters[1].hp;queueAction(s,0,action);advance(s,50);losses[action]=hp-s.fighters[1].hp;}assert.ok(losses.e>0,spec.name);assert.equal(losses.q,damageAgainst(meleeDamage(spec.id)/4,spec.element,'crysteel'),spec.name);assert.equal(losses.e,damageAgainst(meleeDamage(spec.id),spec.element,'crysteel'),spec.name);}
 });
 test('E is a fast single melee hit and earns more energy than Q',()=>{
-  const s=fight(),before=s.fighters[1].hp;queueAction(s,0,'e');advance(s,22);assert.equal(before-s.fighters[1].hp,meleeDamage('ashfang'));assert.ok(s.fighters[0].energy>=12);assert.equal(s.fighters[0].attack,null);
+  const s=fight(),before=s.fighters[1].hp;queueAction(s,0,'e');advance(s,22);assert.equal(before-s.fighters[1].hp,damageAgainst(meleeDamage('ashfang'),'Ember','zipcat'));assert.ok(s.fighters[0].energy>=12);assert.equal(s.fighters[0].attack,null);
 });
 test('Q reaches at range while melee misses and projectile lifetime is bounded',()=>{
   for(const action of ['q','e']){const s=fight();s.fighters[1].x=1000;queueAction(s,0,action);advance(s,60);assert.equal(s.fighters[1].hp<s.fighters[1].maxHp,action==='q');assert.equal(s.projectiles.length,0);}

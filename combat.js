@@ -1,12 +1,13 @@
-import {START_SECONDS} from './flow.js?v=9';
-import {fighter} from './fighters.js?v=9';
+import {typeMultiplier,validTeam} from './balance.js?v=10';
+import {START_SECONDS} from './flow.js?v=10';
+import {fighter} from './fighters.js?v=10';
 export const FPS=60, ROUND_FRAMES=60*FPS;
 export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,melee:{duration:22,active:6},ranged:{duration:44,active:12},deflect:{duration:18,window:8,cooldown:40},finisher:{duration:66,active:17}});
 export const ACTIONS=['q','e','r','space'];
 export const emptyInput=()=>({left:false,right:false,jump:false,duck:false});
-// Multiples of four make the ranged/melee damage ratio exact, even after rounding.
+// Q has one quarter of E base damage; defense/type are applied at impact.
 export const meleeDamage=id=>Math.round(80*fighter(id).power/4)*4;
-export function hurtbox(f){const spec=fighter(f.id),standing=Math.max(64,Math.min(205,spec.anatomy.bodyHeight*spec.anatomy.scale*38)),height=f.ducking?Math.min(standing*.42,48):standing;return {top:f.y-height,bottom:f.y-(spec.anatomy.floating&&!f.ducking?20:8)};}
+export function hurtbox(f){return {top:f.y-(f.ducking?48:120),bottom:f.y-8};}
 export function strikeBand(f,a){
   if(a.kind==='super')return {top:f.y-240,bottom:f.y+60};
   if(a.kind==='low'||a.kind==='breaker')return {top:f.y-48,bottom:f.y+1};
@@ -15,8 +16,12 @@ export function strikeBand(f,a){
   return {top:f.y-100,bottom:f.y-24};
 }
 const verticalOverlap=(a,b)=>a.top<=b.bottom&&a.bottom>=b.top;
-function makeFighter(id,index){const spec=fighter(id);return {id:spec.id,x:index?880:320,y:0,vx:0,vy:0,facing:index?-1:1,hp:spec.hp,maxHp:spec.hp,energy:0,stun:0,invulnerable:0,attack:null,cooldown:0,ducking:false,parryFrames:0,deflectCooldown:0,counterWindow:0,queue:[],sequence:[],combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',meleeStreak:0,lastMeleeHit:-9999,roundWins:0};}
-export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',botPolicy='classic',seed=157,matchId='match'}={}){return {id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,botPolicy,fighters:[makeFighter(p1,0),makeFighter(p2,1)],projectiles:[],effects:[],events:[],nextId:1,seed,lastRoundWinner:null,winner:null,shake:0,flash:0};}
+export function makeFighter(id,index){const spec=fighter(id);return {id:spec.id,x:index?880:320,y:0,vx:0,vy:0,facing:index?-1:1,hp:spec.hp,maxHp:spec.hp,energy:0,stun:0,invulnerable:0,attack:null,cooldown:0,ducking:false,parryFrames:0,deflectCooldown:0,counterWindow:0,queue:[],sequence:[],combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',meleeStreak:0,lastMeleeHit:-9999,roundWins:0};}
+export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',botPolicy='classic',seed=157,matchId='match'}={}){const ids=[p1,p2].map(v=>Array.isArray(v)?v:[v]);for(const team of ids)if(!validTeam(team))throw new Error('Choose one to three distinct fighters');
+ const teamMode=Array.isArray(p1)||Array.isArray(p2);
+ const state={id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,botPolicy,fighters:[makeFighter(ids[0][0],0),makeFighter(ids[1][0],1)],projectiles:[],effects:[],events:[],nextId:1,seed,lastRoundWinner:null,winner:null,shake:0,flash:0};
+ if(teamMode){state.format='team';state.teams=ids.map((team,i)=>({members:team.map(id=>makeFighter(id,i)),active:0}));state.fighters=state.teams.map(t=>t.members[0]);state.needsReplacement=[false,false];state.time=TEAM_BOUT_FRAMES;}return state;}
+
 function random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
 function event(s,type,data={}){s.events.push({id:s.nextId++,type,frame:s.frame,...data});s.events=s.events.slice(-20);}
 export function queueAction(s,index,action,input=emptyInput()){
@@ -63,7 +68,9 @@ function hit(s,index,damage,knockback,launch,{projectile=null,ultimate=null,coun
   const armored=d.attack?.kind==='super'&&['furnace-ring','root-charge'].includes(d.attack.ultimateId);
   let pushback=false;
   if(melee){a.meleeStreak=s.frame-a.lastMeleeHit<=90?a.meleeStreak+1:1;a.lastMeleeHit=s.frame;if(a.meleeStreak>=2){pushback=true;knockback=22;a.meleeStreak=0;a.lastMove=fighter(a.id).moves.pushback;}}
-  const amount=Math.max(1,Math.round(damage*(armored?.5:1)));
+  const element=projectile?fighter(projectile.sourceId).element:fighter(a.id).element;
+  const multiplier=typeMultiplier(element,fighter(d.id).element);
+  const amount=damageAgainst(damage,element,d.id,armored?.5:1);
   d.hp=Math.max(0,d.hp-amount);d.hitFlash=8;d.vx=direction*knockback;d.stun=armored?0:Math.min(28,8+damage/16);
   if(ultimate?.freeze)d.stun+=ultimate.freeze;
   if(pushback&&!armored)d.stun=Math.max(d.stun,22);
@@ -77,7 +84,7 @@ function hit(s,index,damage,knockback,launch,{projectile=null,ultimate=null,coun
   s.effects.push({id:s.nextId++,type:pushback?'pushback':counter?'counter':'hit',x:d.x,y:(hurtbox(d).top+hurtbox(d).bottom)/2,age:0,life:22,color:fighter(a.id).color,amount});
   if(damage>=130)s.flash=4;
   if(ultimate?.heal)a.hp=Math.min(a.maxHp,a.hp+Math.round(amount*ultimate.heal));
-  event(s,counter?'counter':'hit',{player:index,damage:amount,combo:a.combo,ranged:!!projectile});if(pushback)event(s,'pushback',{player:index});return true;
+  event(s,counter?'counter':'hit',{player:index,damage:amount,multiplier,element,combo:a.combo,ranged:!!projectile});if(pushback)event(s,'pushback',{player:index});return true;
 }
 function updateUltimate(s,f,a,target){
   const age=a.age,style=a.ultimateId,active=a.active;
@@ -140,8 +147,11 @@ function finishRound(s){
   else{s.phase='roundover';s.phaseTimer=240;}
 }
 function nextRound(s){s.round++;s.time=ROUND_FRAMES;s.phase='countdown';s.phaseTimer=180;s.projectiles=[];s.effects=[];s.fighters=s.fighters.map((old,i)=>({...makeFighter(old.id,i),roundWins:old.roundWins}));}
+export function hydrateTeams(s){if(s.format==='team')for(let i=0;i<2;i++)s.teams[i].members[s.teams[i].active]=s.fighters[i];return s;}
 export function step(s,inputs=[emptyInput(),emptyInput()],botController=null){
+  hydrateTeams(s);
   if(s.phase==='finished')return;
+  if(s.phase==='replacement'){if(s.mode==='bot'&&s.needsReplacement[1])selectReplacement(s,1,bestReplacement(s,1));return;}
   s.frame++;s.shake=Math.max(0,s.shake-1);s.flash=Math.max(0,s.flash-1);
   if(s.phase!=='fight'){if(--s.phaseTimer<=0){if(s.phase==='roundover')nextRound(s);else{s.phase='fight';event(s,'fight');}}return;}
   s.time--;
@@ -174,6 +184,55 @@ export function step(s,inputs=[emptyInput(),emptyInput()],botController=null){
   }
   s.projectiles=s.projectiles.filter(p=>p.life>0&&p.x>-80&&p.x<1280);
   s.effects.forEach(e=>e.age++);s.effects=s.effects.filter(e=>e.age<e.life);
-  if(a.hp<=0||b.hp<=0||s.time<=0)finishRound(s);
+  if(a.hp<=0||b.hp<=0||s.time<=0){if(s.format==='team')resolveTeamKnockout(s);else finishRound(s);}
 }
 export function rewardFor(s,index){if(s.phase!=='finished')return null;const won=s.winner===index,draw=s.winner===null;return {won,draw,xp:won?120:draw?65:45,shards:won?50:draw?25:15};}
+
+export const TEAM_BOUT_FRAMES=90*FPS;
+export {validTeam};
+export function damageAgainst(base,element,defenderId,armor=1){return Math.max(1,Math.round(base*typeMultiplier(element,fighter(defenderId).element)/fighter(defenderId).defense*armor));}
+export function livingMembers(s,index){return s.teams?.[index]?.members.filter(f=>f.hp>0)||[];}
+function settleBout(s){s.projectiles=[];s.effects=[];for(let i=0;i<2;i++){const f=s.fighters[i];Object.assign(f,{x:i?880:320,y:0,vx:0,vy:0,attack:null,cooldown:0,stun:0,invulnerable:0,queue:[],sequence:[],parryFrames:0,deflectCooldown:0,counterWindow:0,ducking:false,meleeStreak:0,lastMeleeHit:-9999,combo:0,comboAge:0,hitFlash:0,lastMove:''});}s.round++;s.time=TEAM_BOUT_FRAMES;s.phase='countdown';s.phaseTimer=2*FPS;}
+export function resolveTeamKnockout(s){
+  if(s.format!=='team'||s.phase!=='fight')return false;
+  if(s.time>0&&s.fighters.every(f=>f.hp>0))return false;
+  hydrateTeams(s);
+  // Time-out eliminates the lower remaining health percentage; ties are double KOs.
+  if(s.time<=0&&s.fighters.every(f=>f.hp>0)){
+    const [a,b]=s.fighters.map(f=>f.hp/f.maxHp);
+    if(a<=b)s.fighters[0].hp=0;
+    if(b<=a)s.fighters[1].hp=0;
+  }
+  const alive=[livingMembers(s,0),livingMembers(s,1)];
+  if(!alive[0].length||!alive[1].length){
+    s.phase='finished';
+    s.winner=!alive[0].length&&!alive[1].length?null:alive[0].length?0:1;
+    // A simultaneous active KO can leave one side with a winning reserve.
+    if(s.winner!==null&&s.fighters[s.winner].hp<=0){
+      const team=s.teams[s.winner];
+      team.active=team.members.indexOf(alive[s.winner][0]);
+      s.fighters[s.winner]=team.members[team.active];
+    }
+    event(s,'match-end',{winner:s.winner});return true;
+  }
+  s.needsReplacement=s.fighters.map(f=>f.hp<=0);
+  s.projectiles=[];s.phase='replacement';
+  event(s,'team-ko',{players:s.needsReplacement.map((v,i)=>v?i:null).filter(v=>v!==null)});
+  return true;
+}
+export function selectReplacement(s,index,id){
+  if(s.format!=='team'||s.phase!=='replacement'||![0,1].includes(index)||!s.needsReplacement[index])return false;
+  hydrateTeams(s);
+  const team=s.teams[index],slot=team.members.findIndex(f=>f.id===id&&f.hp>0);
+  if(slot<0)return false;
+  team.active=slot;s.fighters[index]=team.members[slot];s.needsReplacement[index]=false;
+  event(s,'replacement',{player:index,id});
+  if(!s.needsReplacement.some(Boolean))settleBout(s);
+  return true;
+}
+export function bestReplacement(s,index){
+  const opponentElement=fighter(s.fighters[1-index].id).element;
+  return [...livingMembers(s,index)].sort((a,b)=>
+    typeMultiplier(fighter(b.id).element,opponentElement)-typeMultiplier(fighter(a.id).element,opponentElement)
+  )[0]?.id;
+}
