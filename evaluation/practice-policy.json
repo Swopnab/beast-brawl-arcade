@@ -1,0 +1,88 @@
+{
+  "method": "Supervised imitation of a scripted coach on synthetic combat snapshots; not reinforcement learning or human play.",
+  "torch": "2.9.0",
+  "pandas": "2.2.3",
+  "training_seed": 7,
+  "data_seed": 20261027,
+  "dataset_sha256": "3a14f96ddbda609f4c79b86f8d28faa9d90adec567436513d3b7ba4dfd285f67",
+  "splits": {
+    "test": 9600,
+    "train": 57600,
+    "validation": 9600
+  },
+  "split_rule": "Disjoint generation-batch IDs: 0-239 train, 240-279 validation, 280-319 test.",
+  "best_epoch": 97,
+  "test_accuracy": 0.97677081823349,
+  "test_macro_f1": 0.8880333061377595,
+  "majority_baseline_accuracy": 0.620520830154419,
+  "per_action": [
+    {
+      "action": "approach",
+      "support": 5957,
+      "precision": 0.9974048442906575,
+      "recall": 0.9677690112472721,
+      "f1": 0.9823634659623414
+    },
+    {
+      "action": "retreat",
+      "support": 16,
+      "precision": 0.4166666666666667,
+      "recall": 0.9375,
+      "f1": 0.5769230769230769
+    },
+    {
+      "action": "strike",
+      "support": 109,
+      "precision": 0.7559055118110236,
+      "recall": 0.8807339449541285,
+      "f1": 0.8135593220338982
+    },
+    {
+      "action": "ranged",
+      "support": 808,
+      "precision": 0.9311551925320887,
+      "recall": 0.9876237623762376,
+      "f1": 0.9585585585585585
+    },
+    {
+      "action": "deflect",
+      "support": 244,
+      "precision": 0.8888888888888888,
+      "recall": 0.9836065573770492,
+      "f1": 0.933852140077821
+    },
+    {
+      "action": "ultimate",
+      "support": 121,
+      "precision": 0.7100591715976331,
+      "recall": 0.9917355371900827,
+      "f1": 0.8275862068965518
+    },
+    {
+      "action": "duck",
+      "support": 89,
+      "precision": 0.898989898989899,
+      "recall": 1.0,
+      "f1": 0.9468085106382979
+    },
+    {
+      "action": "jump",
+      "support": 92,
+      "precision": 0.9191919191919192,
+      "recall": 0.9891304347826086,
+      "f1": 0.9528795811518325
+    },
+    {
+      "action": "wait",
+      "support": 2164,
+      "precision": 1.0,
+      "recall": 0.9995378927911276,
+      "f1": 0.9997688929974579
+    }
+  ],
+  "limits": [
+    "Teacher-agreement metrics are not human win rate or proof of strategic intelligence.",
+    "Snapshots are synthetic and independent; not a real human-gameplay dataset.",
+    "No online learning, human telemetry or paid API inference."
+  ]
+}

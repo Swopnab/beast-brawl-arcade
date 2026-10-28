@@ -1,5 +1,5 @@
-import {START_SECONDS} from './flow.js?v=8';
-import {fighter} from './fighters.js?v=8';
+import {START_SECONDS} from './flow.js?v=9';
+import {fighter} from './fighters.js?v=9';
 export const FPS=60, ROUND_FRAMES=60*FPS;
 export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,melee:{duration:22,active:6},ranged:{duration:44,active:12},deflect:{duration:18,window:8,cooldown:40},finisher:{duration:66,active:17}});
 export const ACTIONS=['q','e','r','space'];
@@ -16,7 +16,7 @@ export function strikeBand(f,a){
 }
 const verticalOverlap=(a,b)=>a.top<=b.bottom&&a.bottom>=b.top;
 function makeFighter(id,index){const spec=fighter(id);return {id:spec.id,x:index?880:320,y:0,vx:0,vy:0,facing:index?-1:1,hp:spec.hp,maxHp:spec.hp,energy:0,stun:0,invulnerable:0,attack:null,cooldown:0,ducking:false,parryFrames:0,deflectCooldown:0,counterWindow:0,queue:[],sequence:[],combo:0,comboAge:0,hitFlash:0,walk:0,lastMove:'',meleeStreak:0,lastMeleeHit:-9999,roundWins:0};}
-export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',seed=157,matchId='match'}={}){return {id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,fighters:[makeFighter(p1,0),makeFighter(p2,1)],projectiles:[],effects:[],events:[],nextId:1,seed,lastRoundWinner:null,winner:null,shake:0,flash:0};}
+export function createMatch(p1,p2,{mode='bot',difficulty='rival',stageId='volcano',botPolicy='classic',seed=157,matchId='match'}={}){return {id:matchId,stageId,phase:'briefing',phaseTimer:START_SECONDS*FPS,frame:0,round:1,time:ROUND_FRAMES,mode,difficulty,botPolicy,fighters:[makeFighter(p1,0),makeFighter(p2,1)],projectiles:[],effects:[],events:[],nextId:1,seed,lastRoundWinner:null,winner:null,shake:0,flash:0};}
 function random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
 function event(s,type,data={}){s.events.push({id:s.nextId++,type,frame:s.frame,...data});s.events=s.events.slice(-20);}
 export function queueAction(s,index,action,input=emptyInput()){
@@ -140,12 +140,12 @@ function finishRound(s){
   else{s.phase='roundover';s.phaseTimer=240;}
 }
 function nextRound(s){s.round++;s.time=ROUND_FRAMES;s.phase='countdown';s.phaseTimer=180;s.projectiles=[];s.effects=[];s.fighters=s.fighters.map((old,i)=>({...makeFighter(old.id,i),roundWins:old.roundWins}));}
-export function step(s,inputs=[emptyInput(),emptyInput()]){
+export function step(s,inputs=[emptyInput(),emptyInput()],botController=null){
   if(s.phase==='finished')return;
   s.frame++;s.shake=Math.max(0,s.shake-1);s.flash=Math.max(0,s.flash-1);
   if(s.phase!=='fight'){if(--s.phaseTimer<=0){if(s.phase==='roundover')nextRound(s);else{s.phase='fight';event(s,'fight');}}return;}
   s.time--;
-  const commands=[inputs[0]||emptyInput(),s.mode==='bot'?botInput(s):inputs[1]||emptyInput()];
+  const commands=[inputs[0]||emptyInput(),s.mode==='bot'?(botController?botController(s):botInput(s)):inputs[1]||emptyInput()];
   // Resolve both players' defensive inputs before either player's hit detection.
   for(let i=0;i<2;i++){
     const f=s.fighters[i],op=s.fighters[1-i],spec=fighter(f.id),input=commands[i];

@@ -1,8 +1,8 @@
 import * as T from './vendor/three.module.js';
-import {fighter,ARENAS} from './fighters.js?v=8';
-import {makeCreature,animateCreature} from './creatures3d.js?v=8';
-import {makeWorld} from './worlds3d.js?v=8';
-import {combatPosition,poseFor,previewAngle} from './scene-data.js?v=8';
+import {fighter,ARENAS} from './fighters.js?v=9';
+import {makeCreature,animateCreature} from './creatures3d.js?v=9';
+import {makeWorld} from './worlds3d.js?v=9';
+import {combatPosition,poseFor,previewAngle} from './scene-data.js?v=9';
 let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 export function createGraphics3D(){
   const renders=[];
