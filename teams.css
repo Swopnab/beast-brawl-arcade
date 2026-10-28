@@ -58,3 +58,5 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges}
  .team-buttons>button{min-height:25px;height:25px;font-size:7px}
  .fighter-card.on-team:after{font-size:4px;padding:1px}
 }
+/* Keep native pixel proportions when a phone or ultrawide screen adds space. */
+.pixel-mode #arena{object-fit:contain;background:#141b2d}
