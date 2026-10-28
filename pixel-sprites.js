@@ -1,43 +1,32 @@
-// Original 24-pixel-grid sprites. # outline, b body, s shade, h highlight,
-// a accent, w eye white, e pupil. Transparent cells are dots.
-export const SPRITES={
-ashfang:[
-'....##........##........','...#hh#......#hh#.......','...#bb########bb#.......','...#bbbhhhhbbbbbb#......','....#bbwwbbwwbbb#.......','....#bbeebbeebbb#.......','.....#bbhhbbbb##........','..##..#baaaab#..##......','.#sb#..#bbbb#..#bs#.....','#ssbb###bbbb###bbss#....','#ssbbb#bbbbbb#bbbss#....','.#ssbb#bhhhhb#bbss#.....','..##bb#bhhhhb#bb##......','....###bhhhhb###........','.....#bbhhhhbb#.........','..##.#bbbbbbbb#.........','.#bb##bbbbbbbb#.........','.#bbb#bbbbbbbb#.........','..#bb##bbbbbb##.........','...###.#bbbb#...........','......#bb##bb#..........','.....#bbb##bbb#.........','.....#aaa##aaa#.........','......###..###..........'],
-kilnback:[
-'........####............','.......#hhhh#...........','......#hsssssh#.........','.....#hsssssssh#........','....#hssaaaaassh#.......','...#hssaaaaaaassh#......','..#hssaaa##aaaassh#.....','..#ssaaa#hh#aaaass#.....','..#saaa#hhhh#aaaass#....','..#saa#hsssssh#aaas#....','..#saa#ssaaass#aaas#....','..#saa#saaaaas#aaas#....','...#aa#saaaaas#aaas#....','...#aaa######aaaass#....','....#aaaaaaaaaaa##......','...#bbbbbbbbbbbbb#......','..#bbwwbbbbwwbbbb#......','..#bbeebbbbeebbbb#......','...#bbbbhhhhbbbb#.......','....#bbbbbbbbbb#........','..##bb########bb##......','.#bbbb#......#bbbb#.....','.#aaaa#......#aaaa#.....','..####........####......'],
-reefclaw:[
-'.####............####...','#hhhh#..........#hhhh#..','#bbbb#..........#bbbb#..','#b##b#..........#b##b#..','#b..b#..........#b..b#..','.####............####...','..#bb#..........#bb#....','..#bb#..##..##..#bb#....','...#bb##ww##ww##bb#.....','....#bb#ee##ee#bb#......','.....#bbbbbbbbbb#.......','....#bhhhhhhhhhhb#......','...#bhhaaaaaaaahhb#.....','...#bhaaaassaaaahb#.....','...#bhaaassssaaahb#.....','...#bhaaassssaaahb#.....','....#bhaaaaaaaahb#......','..###bbhhhhhhhhbb###....','.#bbbb##########bbbb#...','.#bb##.#bb##bb#.##bb#...','..##...#bb##bb#...##....','......#bbb##bbb#........','......#aaa##aaa#........','.......###..###.........'],
-inkveil:[
-'.........####...........','.......##hhhh##.........','......#hhhhhhhh#........','.....#hbbbbbbbbh#.......','.....#bbbbbbbbbb#.......','.....#bwwbbbbwwb#.......','.....#beebbbbeeb#.......','......#bbbbbbbb#........','......#bbaaaabb#........','.......#bbbbbb#.........','....###bbbbbbbb###......','...#bbbbbbbbbbbbbb#.....','..#bb##bbbbbbbb##bb#....','..#bb#.#bbbbbb#.#bb#....','..#aa#.#bb##bb#.#aa#....','...##..#bb##bb#..##.....','....##.#bb##bb#.##......','...#bb##bb##bb##bb#.....','...#bb#bb#..#bb#bb#.....','..#bb##bb#..#bb##bb#....','..#aa##aa#..#aa##aa#....','...##..##....##..##.....'],
-zipcat:[
-'....##..........##......','...#hh#........#hh#.....','...#bah########hab#.....','...#baaabbbbbbaaab#.....','....#bbbbbbbbbbbb#......','....#bwwbbbbbbwwb#......','....#beebbbbbbeeb#......','.....#bbbaaabbbb#.......','......#bbbbbbbb#........','...##..#bbbbbb#.........','..#bb#.#bhhhhb#.........','..#bb###bhaahb###.......','...#bb#bbhaahbb#bb#.....','....###bbhaahbb#bb#.....','......#bbhhhhbb#aa#.....','......#bbbbbbbb###......','......#bbbbbbbb#........','..##..#bbbbbbbb#........','.#bb###bbbbbbbb#........','..#bbbbb######b#........','...#####bb##bbb#........','......#bbb##bbb#........','......#aaa##aaa#........','.......###..###.........'],
-boltstag:[
-'..#..#..........#..#....','..####..........####....','....#..#......#..#......','....####......####......','.......#......#.........','.......########.........','......#hhbbbbhh#........','.....#bbwwbbwwbb#.......','.....#bbeebbeebb#.......','......#bbbbbbbb#........','.......#baaab#..........','.......#bbbbb#..........','......##bbbbb##.........','.....#bbbbbbbbb#........','....#bbbbhhhhbbb#.......','....#bbbbhhhhbbb#.......','.....#bbbhhhhbb#........','......#bbbbbbb#.........','.....#bb#####bb#........','.....#bb#...#bb#........','.....#bb#...#bb#........','....#bbb#...#bbb#.......','....#aaa#...#aaa#.......','.....###.....###........'],
-thornox:[
-'...##............##.....','..#hh#..........#hh#....','..#ahh#........#hha#....','...#ahh########hha#.....','....#abbbbbbbbbba#......','.....#bbwwbbwwbb#.......','.....#bbeebbeebb#.......','......#bbaaaabb#........','.....##bbbbbbbb##.......','....#bbbbbbbbbbbb#......','...#bbbbhhhhhhbbbb#.....','..#bbbbbhhaahhbbbbb#....','..#bbb#bhhaahhb#bbb#....','..#bbb#bhhaahhb#bbb#....','..#aaa#bhhhhhhb#aaa#....','...###bbbbbbbbbb###.....','.....#bbbbbbbbbb#.......','.....#bbbbbbbbbb#.......','.....#bbbbbbbbbb#.......','......#bb####bb#........','......#bb#..#bb#........','.....#bbb#..#bbb#.......','.....#aaa#..#aaa#.......','......###....###........'],
-petalmoth:[
-'.###..............###...','#hhh#............#hhh#..','#haah#...#..#...#haah#..','#haaah#..####..#haaah#..','.#haaa#.#wwww#.#aaah#...','.#haaa#.#beeb#.#aaah#...','..#haa###bbbb###aah#....','..#haaa#bbbbbb#aaah#....','...#haa#bbhhbb#aah#.....','....#ha#bbhhbb#ah#......','.....###bbhhbb###.......','....#haa#bhhb#aaah#.....','...#haaah#bb#haaah#.....','..#haaah##bb##haaah#....','..#haah#.#bb#.#haah#....','...#hh#..#aa#..#hh#.....','....##....##....##......','.........#..#...........','.........#..#...........','........#....#..........'],
-hexeye:[
-'........####............','......##hhhh##..........','.....#hbbbbbbh#.........','....#hbbbbbbbbh#........','...#hbbwwwwwwbbh#.......','...#bbwwweewwwbb#.......','...#bbwwweewwwbb#.......','...#bbbwwwwwwbbb#.......','....#bbbbbbbbbb#........','.....#bbaaaabb#.........','....##bbbbbbbb##........','...#bbbbbbbbbbbb#.......','...#bb#bb##bb#bb#.......','...#bb#bb##bb#bb#.......','..#bb##bb##bb##bb#......','..#aa##bb##bb##aa#......','...##.#bb##bb#.##.......','.....#bb#..#bb#.........','.....#aa#..#aa#.........','......##....##..........'],
-nullwyrm:[
-'......##......##........','.....#hh#....#hh#.......','.....#bb######bb#.......','.....#bbbbbbbbbb#.......','.....#bwwbbbbwwb#.......','......#eebbbbee#........','......#bbhaaabb#........','.......#bhhhhbb#........','........#bhhhbb#........','........#bhhhbb#........','.......#bhhhhbb#........','......#bhhhhbb#.........','.....#bhhhhbb#..........','....#bhhhhbb#...........','....#bhhhbb#............','....#bhhhbb####.........','.....#bhhbbbbbb##.......','......#bhhhhhbbbb#......','.......########bbb#.....','..............#bbb#.....','.........##..#bbb#......','........#hh##bbb#.......','.........#bbbbb#........','..........#####.........'],
-glaciop:[
-'......###....###........','.....#hhh#..#hhh#.......','.....#bah#..#hab#.......','.....#bah#..#hab#.......','.....#bah#..#hab#.......','......#bh####hb#........','......#bbbbbbbb#........','.....#bbwwbbwwbb#.......','.....#bbeebbeebb#.......','......#bbbaaabb#........','.......#bbbbbb#.........','......##bbbbbb##........','.....#bbbhhhhbbb#.......','....#bbb#hhhh#bbb#......','....#aaa#hhhh#aaa#......','.....###bhhhh###........','.......#bbbbbb#.........','.......#bbbbbb#.........','......#bbb##bbb#........','......#bb#..#bb#........','.....#bbb#..#bbb#.......','....#bbbb#..#bbbb#......','....#aaaa#..#aaaa#......','.....####....####.......'],
-crysteel:[
-'.........##.............','........#hh#............','.......#hbbh#...........','......#hbbbbh#..........','.....#hwwbbwwh#.........','.....#beebbeeb#.........','......#bbbbbb#..........','..####.#aaaab#.####.....','.#hhhh##bbbb##hhhh#.....','#hbbbbbbbhhbbbbbbbh#....','#bbbb#bbbhhbbb#bbbb#....','#bbbb#bbbhhbbb#bbbb#....','#bbbb#bbbhhbbb#bbbb#....','#aaaa#bbbhhbbb#aaaa#....','.####bbbhhhhbbb####.....','....#bbbbbbbbbb#........','....#bbbbbbbbbb#........','.....#bbbbbbbb#.........','.....#bbb##bbb#.........','.....#bbb##bbb#.........','.....#bbb##bbb#.........','....#bbbb##bbbb#........','....#aaaa##aaaa#........','.....####..####.........']};
-export function sprite(ctx,spec,x,ground,scale=1,{facing=1,pose='idle',frame=0,flash=false}={}){
- const rows=SPRITES[spec.id],palette={'#':'#111327',b:spec.color,s:spec.dark,h:'#f6e4ba',a:spec.dark,w:'#fff8de',e:'#16152a'};
- const walk=pose==='walk'?Math.floor(frame/6)%2:0,bob=pose==='idle'?Math.floor(frame/36)%2:0;
- const sx=Math.round(x),sy=Math.round(ground-rows.length*scale-bob*scale);
- for(let y=0;y<rows.length;y++)for(let col=0;col<rows[y].length;col++){
-  const ch=rows[y][col];if(!palette[ch])continue;
-  let yy=y,xx=col;if(pose==='duck')yy=Math.floor(y*.65)+Math.ceil(rows.length*.35);
-  if(walk&&y>rows.length-6)xx+=(col<12?-1:1);
-  if(pose==='ko'){yy=rows.length-4+Math.floor(col/6);xx=y-2;}
-  ctx.fillStyle=flash?'#fff8de':palette[ch];ctx.fillRect(sx+(facing===1?xx-12:11-xx)*scale,sy+yy*scale,scale,scale);
- }
- if(['heavy','moving','counter','launcher','rising','low','air','breaker','super'].includes(pose)){
-  const handX=sx+facing*11*scale,handY=Math.round(ground-12*scale);
-  ctx.fillStyle='#111327';ctx.fillRect(handX+(facing<0?-8*scale:0),handY,8*scale,6*scale);ctx.fillStyle=spec.color;ctx.fillRect(handX+(facing<0?-7*scale:scale),handY+scale,6*scale,4*scale);
- }
+// Four authored poses per fighter, packed into 96×96 native cells with 28 colors.
+import {sprite as fallbackSprite} from './legacy-pixel-sprites.js?v=12';
+export const CELL=96;
+export const SPRITES=Object.freeze(Object.fromEntries([
+ ['fighters-ember-tide',['ashfang','kilnback','reefclaw','inkveil']],
+ ['fighters-volt-wild',['zipcat','boltstag','thornox','petalmoth']],
+ ['fighters-void-frost',['hexeye','nullwyrm','glaciop','crysteel']]
+].flatMap(([sheet,ids])=>ids.map((id,row)=>[id,Object.freeze({sheet,row})]))));
+export const POSE_COLUMNS=Object.freeze({idle:0,walk:0,duck:0,deflect:0,ranged:1,heavy:1,moving:1,counter:1,launcher:1,rising:1,low:1,air:1,breaker:1,super:1,hit:2,ko:3});
+const sheets=new Map(),frames=new Map();let loading;
+export function loadSprites(){
+ if(!loading)loading=Promise.all([...new Set(Object.values(SPRITES).map(s=>s.sheet))].map(sheet=>new Promise(resolve=>{
+  const im=new Image();im.onload=()=>{sheets.set(sheet,im);resolve(true);};im.onerror=()=>resolve(false);im.src=new URL(`./assets/art/${sheet}.png?v=12`,import.meta.url).href;
+ })));
+ return loading;
+}
+export function spriteFrame(id,pose='idle',flash=false){
+ const meta=SPRITES[id],image=sheets.get(meta?.sheet);if(!image)return null;
+ const col=POSE_COLUMNS[pose]??0,key=`${id}-${col}-${flash}`;if(frames.has(key))return frames.get(key);
+ const canvas=document.createElement('canvas');canvas.width=CELL;canvas.height=CELL;
+ const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;c.drawImage(image,col*CELL,meta.row*CELL,CELL,CELL,0,0,CELL,CELL);
+ if(flash){c.globalCompositeOperation='source-atop';c.fillStyle='#fff6d9bb';c.fillRect(0,0,CELL,CELL);}
+ frames.set(key,canvas);return canvas;
+}
+export function sprite(ctx,spec,x,ground,scale=1,{facing=1,pose='idle',frame=0,flash=false,motion=true}={}){
+ const image=spriteFrame(spec.id,pose,flash);
+ if(!image){fallbackSprite(ctx,spec,Math.round(x),Math.round(ground),Math.max(1,Math.round(scale*3)),{facing,pose,frame,flash});return;}
+ const size=Math.max(1,Math.round(CELL*scale)),duck=pose==='duck',height=duck?Math.round(size*.65):size;
+ const bob=motion&&['idle','walk'].includes(pose)?(Math.floor(frame/(pose==='walk'?6:32))%2)*Math.max(1,Math.round(scale)):0;
+ ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(x),Math.round(ground)-bob);ctx.scale(facing,1);
+ ctx.drawImage(image,-Math.round(size/2),-Math.round(height*90/CELL),size,height);ctx.restore();
 }

@@ -1,45 +1,55 @@
-import {fighter,ARENAS} from './fighters.js?v=10';
-import {sprite} from './pixel-sprites.js?v=10';
-const W=320,H=180;
-const palettes={volcano:['#27213d','#59405b','#8b5060','#312e43','#ff8754'],water:['#77bfd3','#426f90','#547d91','#344e67','#9ee9de'],rain:['#191b36','#303550','#434b70','#272a43','#bda7e2'],desert:['#efd19a','#c79877','#a36b68','#705b66','#f4dd9b'],jungle:['#b0cda6','#54877a','#326559','#263f47','#a3c878']};
-function rect(c,color,x,y,w,h){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
-export function drawPixelWorld(c,id='volcano',tick=0){
- const [sky,far,near,floor,accent]=palettes[id]||palettes.volcano;
- rect(c,sky,0,0,W,H);
- // Stepped silhouettes rather than smoothed polygons or 3D meshes.
- for(let x=0;x<W;x+=4){const ridge=70+Math.round((Math.sin(x*.023)+Math.sin(x*.051))*12);rect(c,far,x,ridge,4,100-ridge);}
- if(id==='rain'){
-  for(let x=0;x<W;x+=23){const h=42+(x*17%43);rect(c,near,x,120-h,19,h);for(let y=125-h;y<112;y+=10)for(let xx=x+4;xx<x+16;xx+=7)if((xx+y)%3)rect(c,accent,xx,y,2,3);}
-  for(let i=0;i<34;i++){const x=(i*37+Math.floor(tick/120))%W,y=(i*29+Math.floor(tick/50))%150;rect(c,'#65788e',x,y,1,4);}
- }else if(id==='water'){
-  rect(c,near,0,102,W,43);for(const x of [22,132,256]){rect(c,'#8dcbd1',x,80,17,65);for(let k=0;k<5;k++)rect(c,accent,x+2+k*3,82+(Math.floor(tick/90)+k*13)%60,2,9);}
-  for(let i=0;i<16;i++)rect(c,accent,(i*23+Math.floor(tick/160))%W,125+i%4*5,11,1);
- }else if(id==='jungle'){
-  for(const x of [6,55,124,210,290]){rect(c,'#3c5446',x,65,8,84);rect(c,near,x-15,45,38,26);rect(c,near,x-23,58,50,20);rect(c,'#558a66',x-10,42,24,12);rect(c,'#244b48',x+15,75,2,45);}
- }else if(id==='desert'){
-  for(const x of [8,92,220]){rect(c,near,x,96,55,49);rect(c,near,x+8,82,36,20);rect(c,'#d29b7c',x+8,82,36,3);}
-  rect(c,'#537b64',282,113,4,32);rect(c,'#537b64',275,120,8,4);rect(c,'#537b64',275,113,3,10);
- }else{
-  for(let x=30;x<170;x+=3){const y=100-Math.round((1-Math.abs(x-100)/70)*55);rect(c,near,x,y,3,140-y);if(x>92&&x<109)rect(c,accent,x,y+2,3,10);}
-  rect(c,'#a04d56',0,132,W,16);for(let i=0;i<25;i++)rect(c,accent,(i*17+Math.floor(tick/260))%W,135+i%3*4,8,2);
- }
- rect(c,floor,0,147,W,33);rect(c,accent,0,147,W,2);rect(c,'#191c30',0,150,W,2);
- for(let y=158;y<H;y+=9)for(let x=(y%2)*11;x<W;x+=23)rect(c,'#ffffff0d',x,y,12,1);
- for(let i=0;i<18;i++)rect(c,'#11132744',i*19,152+i%4*6,3,2);
+import {fighter,ARENAS} from './fighters.js?v=12';
+import {sprite,loadSprites} from './pixel-sprites.js?v=12';
+import {drawWorld,drawWeather,pixelRect as rect} from './pixel-worlds.js?v=12';
+export const SPRITE_WORLD_SIZE=145;
+export function battleCamera(s,width,height){
+ const [a,b]=s.fighters,span=Math.abs(a.x-b.x),jump=Math.max(0,-a.y,-b.y),ground=height-30,hud=height<240?58:68;
+ const scale=Math.max(.1,Math.min(1.05,width/(span+310),(ground-hud)/(140+jump))),visible=width/scale,mid=(a.x+b.x)/2;
+ const left=visible>=1200?(1200-visible)/2:Math.max(0,Math.min(1200-visible,mid-visible/2));
+ return {left,scale,ground,hud,x:value=>Math.round((value-left)*scale),y:value=>Math.round(ground+value*scale)};
 }
-function buffer(){const c=document.createElement('canvas');c.width=W;c.height=H;return c;}
+export function arenaPixels(width,height){
+ const ratio=Math.max(.3,width/Math.max(1,height)),w=ratio<1?240:Math.min(640,Math.round(270*ratio));
+ return {width:w,height:Math.round(w/ratio)};
+}
+function canvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
 function present(target,source){const c=target.getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,target.width,target.height);c.drawImage(source,0,0,target.width,target.height);}
 export function createPixelGraphics(){
- let motion=true;const off=buffer(),ctx=off.getContext('2d');document.body.classList.add('pixel-mode');
- const world=(id,time)=>drawPixelWorld(ctx,id,motion?time:0);
- function portrait(target,id,time=0,large=false){const p=document.createElement('canvas');p.width=large?96:48;p.height=large?90:48;const c=p.getContext('2d');sprite(c,fighter(id),p.width/2,p.height-(large?6:5),large?3:1,{frame:motion?Math.floor(time/16):0});present(target,p);}
- return {setMotion(value){motion=value;},background(id,time){world(id,time);present(document.getElementById('scene-background'),off);},card(target,id,time){world(id,time);present(target,off);},thumbnail(target,id){portrait(target,id);},preview(id,time){portrait(document.getElementById('preview-canvas'),id,time,true);},battle(s,skin,time){
-  world(s.stageId,time);const cosmetic=ARENAS.find(a=>a.id===skin);if(skin!=='neon'&&cosmetic)rect(ctx,cosmetic.glow,0,149,W,1);const scale=W/1200,ground=147;
-  for(const f of s.fighters){const x=Math.round(f.x*scale),y=Math.round(ground+f.y*scale);rect(ctx,'#11132788',x-11,148,22,3);sprite(ctx,fighter(f.id),x,y,1,{facing:f.facing,pose:f.hp<=0?'ko':f.attack?.kind||(f.ducking?'duck':Math.abs(f.vx)>1?'walk':'idle'),frame:s.frame,flash:f.hitFlash>0});
-   if(f.parryFrames>0){rect(ctx,'#b8fff3',x+f.facing*13,y-25,2,23);rect(ctx,'#b8fff3',x+f.facing*11,y-27,3,2);}
+ let motion=true;const ready=loadSprites(),worlds=new Map(),off=canvas(480,270),ctx=off.getContext('2d'),portrait=canvas(112,112),pc=portrait.getContext('2d');document.body.classList.add('pixel-mode');
+ function background(id,w,h,time){
+  const key=`${id}-${w}-${h}`;let base=worlds.get(key);
+  if(!base){base=canvas(w,h);drawWorld(base.getContext('2d'),id,w,h,0);worlds.set(key,base);if(worlds.size>12)worlds.delete(worlds.keys().next().value);}
+  if(off.width!==w||off.height!==h){off.width=w;off.height=h;}
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(base,0,0);if(motion)drawWeather(ctx,id,w,h,time);
+ }
+ function drawPortrait(target,id,time=0){pc.clearRect(0,0,112,112);sprite(pc,fighter(id),56,105,1.1,{frame:Math.floor(time/16),motion});present(target,portrait);}
+ function effect(e,camera){
+  const x=camera.x(e.x),y=camera.y(e.y),r=4+Math.floor(e.age/3),color=e.color||'#ffe0a7';
+  for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,-.7]]){rect(ctx,'#172638',x+dx*r-1,y+dy*r-1,4,4);rect(ctx,color,x+dx*r,y+dy*r,2,2);}
+  if(e.amount&&e.age<18){ctx.font='14px RPGPixel';ctx.textAlign='center';ctx.fillStyle='#142331';ctx.fillText(e.amount,x+1,y-10-Math.floor(e.age/2)+1);ctx.fillStyle='#fff0c7';ctx.fillText(e.amount,x,y-10-Math.floor(e.age/2));}
+ }
+ return {ready,setMotion(value){motion=value;},background(id,time){background(id,640,360,time);present(document.getElementById('scene-background'),off);},card(target,id,time){background(id,480,270,time);present(target,off);},thumbnail(target,id){drawPortrait(target,id);},preview(id,time){drawPortrait(document.getElementById('preview-canvas'),id,time);},battle(s,skin,time){
+  const target=document.getElementById('arena'),dims=arenaPixels(target.clientWidth,target.clientHeight);
+  if(target.width!==dims.width||target.height!==dims.height){target.width=dims.width;target.height=dims.height;}
+  background(s.stageId,dims.width,dims.height,time);
+  const camera=battleCamera(s,dims.width,dims.height),cosmetic=ARENAS.find(a=>a.id===skin);
+  target.dataset.fighterPixels=String(Math.round(120*camera.scale*target.clientHeight/dims.height));
+  if(skin!=='neon'&&cosmetic)rect(ctx,cosmetic.glow,0,camera.ground+2,dims.width,1);
+  for(const f of s.fighters){
+   const x=camera.x(f.x-f.facing*18),y=camera.y(f.y),size=SPRITE_WORLD_SIZE*camera.scale;
+   rect(ctx,'#10252e77',x-size*.3,camera.ground+1,size*.6,3);
+   let pose=f.hp<=0?'ko':f.hitFlash>0?'hit':f.ducking?'duck':Math.abs(f.vx)>1?'walk':'idle';
+   if(f.attack&&f.attack.age>=Math.max(1,f.attack.active-3))pose=f.attack.kind;
+   sprite(ctx,fighter(f.id),x,y,size/96,{facing:f.facing,pose,frame:s.frame,flash:f.hitFlash>4,motion});
+   if(f.attack?.kind==='super'){const color=fighter(f.id).color;for(let k=0;k<10;k++){const phase=s.frame/8+k*.63,r=30+(k%3)*6;rect(ctx,color,x+Math.cos(phase)*r,y-size*.4+Math.sin(phase)*r,2+k%2,2+k%2);}}
+   if(f.parryFrames>0){const edge=x+f.facing*48*camera.scale;for(let i=0;i<6;i++)rect(ctx,i%2?'#c0e8d1':'#74b6c0',edge+(i%2)*f.facing*2,y-65*camera.scale+i*8,2,5);}
   }
-  for(const p of s.projectiles){const x=p.x*scale,y=ground+p.y*scale;rect(ctx,p.color,x-3,y-3,6,6);rect(ctx,'#fff4c8',x-1,y-1,2,2);rect(ctx,p.color,x-Math.sign(p.vx)*8,y-1,4,2);}
-  for(const e of s.effects){const x=Math.round(e.x*scale),y=Math.round(ground+e.y*scale),r=3+Math.floor(e.age/4);for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]])rect(ctx,e.color,x+dx*r,y+dy*r,2,2);}
-  present(document.getElementById('arena'),off);
+  for(const p of s.projectiles){
+   const x=camera.x(p.x),y=camera.y(p.y),r=Math.max(3,Math.round(p.radius*camera.scale)),dir=Math.sign(p.vx),spec=fighter(p.sourceId);
+   rect(ctx,spec.dark,x-r,y-r+2,r*2,r*2-4);rect(ctx,p.color,x-r+2,y-r,r*2-4,r*2);rect(ctx,'#fff0bf',x-2,y-2,4,4);
+   for(let k=1;k<4;k++)rect(ctx,k%2?spec.dark:p.color,x-dir*(r+k*4),y+(k%2?2:-3),4-k,2);
+  }
+  for(const e of s.effects)effect(e,camera);
+  present(target,off);
  }};
 }

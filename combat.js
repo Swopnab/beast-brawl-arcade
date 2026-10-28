@@ -1,6 +1,6 @@
-import {typeMultiplier,validTeam} from './balance.js?v=10';
-import {START_SECONDS} from './flow.js?v=10';
-import {fighter} from './fighters.js?v=10';
+import {typeMultiplier,validTeam} from './balance.js?v=12';
+import {START_SECONDS} from './flow.js?v=12';
+import {fighter} from './fighters.js?v=12';
 export const FPS=60, ROUND_FRAMES=60*FPS;
 export const PACE=Object.freeze({run:1.18,jump:1.1,gravity:.72,melee:{duration:22,active:6},ranged:{duration:44,active:12},deflect:{duration:18,window:8,cooldown:40},finisher:{duration:66,active:17}});
 export const ACTIONS=['q','e','r','space'];

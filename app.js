@@ -1,22 +1,23 @@
-import {createLearnedBot,validatePolicy} from './ml-policy.js?v=10';
-import {canStartOnline,START_SECONDS} from './flow.js?v=10';
-import {cleanAudioSettings,createGameAudio} from './audio.js?v=10';
-import {createPixelGraphics} from './pixel-graphics.js?v=10';
-import {elementName,TYPE_CHART} from './balance.js?v=10';
+import {createLearnedBot,validatePolicy} from './ml-policy.js?v=12';
+import {canStartOnline,START_SECONDS} from './flow.js?v=12';
+import {cleanAudioSettings,createGameAudio} from './audio.js?v=12';
+import {createPixelGraphics} from './pixel-graphics.js?v=12';
+import {elementName,TYPE_CHART} from './balance.js?v=12';
 const graphics=createPixelGraphics();
+await graphics.ready;
 import {STAGES,getStage} from './stages.js';
-import {attachJoystick} from './joystick.js?v=10';
-import {createAttackKeys} from './attack-keys.js?v=10';
-import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=10';
-import {createMatch,step,queueAction,emptyInput,FPS,validTeam,selectReplacement,livingMembers} from './combat.js?v=10';
-import {Room,parseCode} from './network.js?v=10';
+import {attachJoystick} from './joystick.js?v=12';
+import {createAttackKeys} from './attack-keys.js?v=12';
+import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=12';
+import {createMatch,step,queueAction,emptyInput,FPS,validTeam,selectReplacement,livingMembers} from './combat.js?v=12';
+import {Room,parseCode} from './network.js?v=12';
 import {cleanProfile,titleFor,grantReward,equipArena} from './profile.js';
 const $=id=>document.getElementById(id);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const storage={get(key){try{return localStorage.getItem(key);}catch{return null;}},set(key,value){try{localStorage.setItem(key,value);}catch{}}};
 let profile;try{profile=cleanProfile(JSON.parse(storage.get('bbarcade-profile')||'{}'));}catch{profile=cleanProfile();}
 let practiceModel=null,trainedBot=null;
-fetch(new URL('./ml/practice-policy.json?v=10',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Model unavailable');return r.json();}).then(model=>{practiceModel=validatePolicy(model);$('trained-option').disabled=false;$('cpu-policy').value='trained';text('cpu-note','Trained CPU or classic rules. Both run on this device.');}).catch(()=>{text('cpu-note','Trained CPU unavailable. Classic practice still works.');});
+fetch(new URL('./ml/practice-policy.json?v=12',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Model unavailable');return r.json();}).then(model=>{practiceModel=validatePolicy(model);$('trained-option').disabled=false;$('cpu-policy').value='trained';text('cpu-note','Trained CPU or classic rules. Both run on this device.');}).catch(()=>{text('cpu-note','Trained CPU unavailable. Classic practice still works.');});
 let gameMode='bot',fighterLocked=false,teamDraft=[];
 let selected=fighter(storage.get('bbarcade-fighter')||'ashfang').id,filter='All',match=null,net=null,lobby=null,busy=false;
 let inputs=[emptyInput(),emptyInput()],overlayKey='',lastEvent=0,lastSnapshot=0,lastFrame=performance.now(),accumulator=0;
@@ -62,7 +63,7 @@ function renderFilters(){
 }
 function renderRoster(){
   const list=FIGHTERS.filter(f=>filter==='All'||f.element===filter);
-  $('roster').innerHTML=list.map(f=>`<button class="fighter-card ${f.id===selected?'selected':''}" data-id="${f.id}" style="--creature:${f.color}" aria-label="Choose ${f.name}, ${f.element}" aria-pressed="${teamDraft.includes(f.id)}"><canvas width="100" height="95" aria-hidden="true"></canvas><strong>${f.name.toUpperCase()}</strong><span>${elementName(f.element)} / ${f.role}</span></button>`).join('');
+  $('roster').innerHTML=list.map(f=>`<button class="fighter-card ${f.id===selected?'selected':''}" data-id="${f.id}" style="--creature:${f.color}" aria-label="Choose ${f.name}, ${f.element}" aria-pressed="${teamDraft.includes(f.id)}"><canvas width="112" height="112" aria-hidden="true"></canvas><strong>${f.name.toUpperCase()}</strong><span>${elementName(f.element)} / ${f.role}</span></button>`).join('');
   $('roster').querySelectorAll('button').forEach(b=>{graphics.thumbnail(b.querySelector('canvas'),b.dataset.id);b.addEventListener('pointerenter',()=>select(b.dataset.id));b.addEventListener('focus',()=>select(b.dataset.id));b.addEventListener('click',()=>select(b.dataset.id,true));});renderDraft();
 }
 function select(id,commit=false){
@@ -306,7 +307,7 @@ function paintCards(now){for(const stage of STAGES)paintCard(stage.id,now);}
 function updateStageChoices(){const guest=net&&!net.host;document.querySelectorAll('.stage-card').forEach(b=>b.disabled=!!(guest&&lobby?.arenaId&&b.dataset.stage!==lobby.arenaId));if(guest&&lobby?.arenaId)stageHover(lobby.arenaId);text('stage-help',guest?'Your friend is hosting. Choose their highlighted arena to continue.':'Pick the place. Bring the fight.');}
 function showStages(){if(match)return;fighterLocked=false;$('selection-wait').hidden=true;$('mode-screen').hidden=true;document.body.dataset.screen='stage';setSteps('stage');$('stage-screen').hidden=false;$('select-screen').hidden=true;$('battle-screen').hidden=true;$('chat-panel').hidden=!net;$('chat-toggle').hidden=!net;text('mode-summary',gameMode==='bot'?'PLAYER VS BOT':'PLAYER VS PLAYER');stageHover(chosenStage);updateStageChoices();cardsDirty=true;}
 function showModes(){document.body.dataset.screen='mode';setSteps('mode');$('mode-screen').hidden=false;$('stage-screen').hidden=true;$('select-screen').hidden=true;$('battle-screen').hidden=true;$('selection-wait').hidden=true;$('join-form').hidden=true;$('chat-toggle').hidden=true;fighterLocked=false;}
-function renderModeArt(){for(const [id,ids] of [['pvp-art',['glaciop','crysteel']],['bot-art',['ashfang','hexeye']]]){const c=$(id),ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ids.forEach((id,i)=>{const portrait=document.createElement('canvas');portrait.width=200;portrait.height=200;graphics.thumbnail(portrait,id);ctx.drawImage(portrait,60+i*220,0,200,220);});ctx.fillStyle='#f2d5a7';ctx.font='34px ArcadePixel';ctx.textAlign='center';ctx.fillText('VS',270,120);}}
+
 
 $('stage-options').innerHTML=STAGES.map((s,i)=>'<button class="stage-card '+(s.id===chosenStage?'active':'')+'" data-stage="'+s.id+'" style="--card-color:'+s.accent+'" aria-label="Choose '+s.name+', '+s.type.toLowerCase()+' background"><canvas width="420" height="600" aria-hidden="true"></canvas><div class="stage-card-top"><span class="stage-card-number">'+s.number+' / STAGE</span><span class="stage-card-sigil" aria-hidden="true">'+['△','≋','ϟ','☼','✳'][i]+'</span></div><div class="stage-card-copy"><span class="stage-card-type">'+s.type+'</span><h2>'+s.name.toUpperCase()+'</h2><p>'+s.subtitle+'</p></div><span class="stage-card-arrow" aria-hidden="true">↗</span></button>').join('');
 document.querySelectorAll('.stage-card').forEach(button=>{button.addEventListener('pointerenter',()=>stageHover(button.dataset.stage));button.addEventListener('focus',()=>stageHover(button.dataset.stage));button.addEventListener('click',()=>chooseStage(button.dataset.stage));});
@@ -319,4 +320,4 @@ $('change-fighter').addEventListener('click',()=>{fighterLocked=false;if(net?.ho
 $('random-fighter').addEventListener('click',()=>{if(fighterLocked)return;const choices=FIGHTERS.map(f=>f.id);teamDraft=[];while(teamDraft.length<3)teamDraft.push(choices.splice(crypto.getRandomValues(new Uint8Array(1))[0]%choices.length,1)[0]);selected=teamDraft[0];renderSelected();renderRoster();renderDraft();});
 window.addEventListener('resize',()=>{cardsDirty=true;});window.visualViewport?.addEventListener('resize',()=>{cardsDirty=true;});
 document.addEventListener('keydown',e=>{if(match||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;const screen=document.body.dataset.screen;if(!['stage','fighter'].includes(screen))return;const direction=e.code==='ArrowLeft'?-1:e.code==='ArrowRight'?1:0;if(direction){e.preventDefault();if(screen==='stage'){const i=STAGES.findIndex(s=>s.id===hoverStage);const next=STAGES[(i+direction+STAGES.length)%STAGES.length];stageHover(next.id);document.querySelector('[data-stage="'+next.id+'"]').focus({preventScroll:true});}else{const list=FIGHTERS.filter(f=>filter==='All'||f.element===filter);const i=list.findIndex(f=>f.id===selected);select(list[(i+direction+list.length)%list.length].id);}}else if(e.code==='Enter'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='A'){e.preventDefault();if(screen==='stage')chooseStage(hoverStage);else select(selected,true);}});
-applyStage(chosenStage);renderModeArt();document.fonts.ready.then(renderModeArt);showModes();
+applyStage(chosenStage);showModes();

@@ -1,6 +1,6 @@
 // A small exported PyTorch network. Training stays offline; inference stays in the browser.
-import { fighter } from "./fighters.js?v=10";
-import { emptyInput, queueAction } from "./combat.js?v=10";
+import { fighter } from "./fighters.js?v=12";
+import { emptyInput, queueAction } from "./combat.js?v=12";
 export const FEATURES = [
   "distance",
   "direction",

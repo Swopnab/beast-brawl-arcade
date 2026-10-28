@@ -6,7 +6,7 @@ An original 2D creature fighter: twelve fixed-grid sprites, five pixel-art arena
 
 ## Play a team match
 
-1. Choose **CPU Practice** or **Online Match**. Online hosts share the room link; guests can paste a room code or open an invite.
+1. Choose **CPU Battle** or **Play Online**. Online hosts share the room link; guests can paste a room code or open an invite.
 2. Choose an arena. Online guests use the host’s arena.
 3. Click one to three distinct fighters in the order you want them. The first pick starts. Click a selected fighter or its team slot to remove it. **Random** fills three slots without starting a match.
 4. Press **Start** or **Ready**. Both online teams must be ready and connected. A five-second briefing precedes combat.
@@ -55,8 +55,13 @@ This is an original six-element game chart, not the full rules of another franch
 
 ## True 2D pixel presentation
 
-`pixel-sprites.js` contains twelve original character grids and their limited palettes. `pixel-graphics.js` draws the five arenas, sprite poses, projectiles and impacts to a native **320×180** Canvas, enlarged with image smoothing disabled. Idle, walking, ducking, attacking, hit and KO poses use grid pixels. The same sprites appear in menus, portraits and reserve choices. There are no active 3D models, WebGL renderer or Three.js requests. Legacy 3D/illustrated source files and licenses remain in the repository for history; the current app does not load them.
+The title screen uses original illustrated character key art with a traditional game menu. The game uses twelve detailed **96×96** sprite characters, each with four distinct poses (idle, attack, hit and KO). Each fighter's four poses share a strict **28-color palette**, with binary transparency and nearest-neighbor rendering. Walking uses the idle frame with a small bob; ducking uses a compressed pose. These are not separate hand-drawn animation sequences. Portraits, selection cards and reserve choices use the same sprites.
 
+`pixel-worlds.js` builds five layered environments with textured terrain, foliage, ruins, buildings, waterfalls and decorative weather. `pixel-graphics.js` caches those layers and draws the action on an adaptive native canvas: 240–640 pixels wide, with height matching the actual arena. Portrait and landscape screens retain square pixels without the earlier large empty bands. The camera moves closer during close combat and pulls back to keep both fighters and jumps visible. Combat positions, hitboxes, damage, team rules and networking are unchanged by the visual update.
+
+Pixelify Sans supplies locally bundled RPG-style lettering under the SIL Open Font License. No remote font request is needed. There are no active 3D models, WebGL renderer or Three.js requests. Earlier rendering files remain for history; the tiny sprite module is used only if a detailed atlas fails to load.
+
+[Art provenance, asset paths, generation prompts and rebuilding instructions](docs/ART-DIRECTION.md) document the built-in image generation and deterministic local sprite-packing pipeline. No commercial game artwork is included.
 The free arenas are Caldera Rift, Azure Falls, Rainline City, Sunscorch Dunes and Verdant Ruins. Original artwork, names and moves are authored for this game; no ripped commercial game sprites are used. Local pixel lettering, fullscreen, phone/tablet layouts, touch controls and reduced-motion settings remain available.
 
 ## Controls
@@ -80,7 +85,7 @@ Touch devices have a movement joystick and multi-touch attack buttons. Opening a
 
 ## Trained practice opponent
 
-Choose **Trained CPU** or **Classic CPU** before starting practice. The trained CPU uses an offline-trained PyTorch network exported as small browser-readable weights. It imitates a scripted coach on synthetic combat states. It is not reinforcement learning, an LLM or a model trained on human gameplay. The classic CPU works if weights cannot load. No paid API or Python server is needed to play.
+Choose **Trained CPU** or **Classic CPU** before starting a CPU battle. The trained CPU uses an offline-trained PyTorch network exported as small browser-readable weights. It imitates a scripted coach on synthetic combat states. It is not reinforcement learning, an LLM or a model trained on human gameplay. The classic CPU works if weights cannot load. No paid API or Python server is needed to play.
 
 - [Understand and reproduce the Python, PyTorch and Pandas pipeline](docs/AI-LEARNING-GUIDE.md)
 - [Honest resume wording](docs/RESUME-NOTES.md)
