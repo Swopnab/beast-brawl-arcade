@@ -1,5 +1,5 @@
 import {drawStage} from './stages.js';
-import { fighter, ARENAS } from './fighters.js?v=8';
+import { fighter, ARENAS } from './fighters.js?v=9';
 let scratch;
 const rect=(c,color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
 function poly(c,color,points){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();}

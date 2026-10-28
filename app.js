@@ -1,19 +1,22 @@
-import {canStartOnline,START_SECONDS} from './flow.js?v=8';
-import {cleanAudioSettings,createGameAudio} from './audio.js?v=8';
+import {createLearnedBot,validatePolicy} from './ml-policy.js?v=9';
+import {canStartOnline,START_SECONDS} from './flow.js?v=9';
+import {cleanAudioSettings,createGameAudio} from './audio.js?v=9';
 let graphics3D=null;
-try{const {createGraphics3D}=await import('./graphics3d.js?v=8');graphics3D=createGraphics3D();}catch(error){console.warn('3D unavailable; using the original illustrated renderer.',error.message);for(const id of ['scene-background','preview-canvas','arena']){const old=document.getElementById(id),fresh=document.createElement('canvas');for(const a of old.attributes)fresh.setAttribute(a.name,a.value);old.replaceWith(fresh);}document.body.classList.remove('graphics-3d');document.getElementById('render-status').textContent='ILLUSTRATED MODE / 3D UNAVAILABLE';}
+try{const {createGraphics3D}=await import('./graphics3d.js?v=9');graphics3D=createGraphics3D();}catch(error){console.warn('3D unavailable; using the original illustrated renderer.',error.message);for(const id of ['scene-background','preview-canvas','arena']){const old=document.getElementById(id),fresh=document.createElement('canvas');for(const a of old.attributes)fresh.setAttribute(a.name,a.value);old.replaceWith(fresh);}document.body.classList.remove('graphics-3d');document.getElementById('render-status').textContent='ILLUSTRATED MODE / 3D UNAVAILABLE';}
 import {STAGES,getStage,drawStage} from './stages.js';
-import {attachJoystick} from './joystick.js?v=8';
-import {createAttackKeys} from './attack-keys.js?v=8';
-import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=8';
-import {createMatch,step,queueAction,emptyInput,FPS} from './combat.js?v=8';
-import {drawCreature,thumbnail,renderArena} from './art.js?v=8';
-import {Room,parseCode} from './network.js?v=8';
+import {attachJoystick} from './joystick.js?v=9';
+import {createAttackKeys} from './attack-keys.js?v=9';
+import {FIGHTERS,ELEMENTS,MOVE_LIST,ARENAS,TITLES,fighter} from './fighters.js?v=9';
+import {createMatch,step,queueAction,emptyInput,FPS} from './combat.js?v=9';
+import {drawCreature,thumbnail,renderArena} from './art.js?v=9';
+import {Room,parseCode} from './network.js?v=9';
 import {cleanProfile,titleFor,grantReward,equipArena} from './profile.js';
 const $=id=>document.getElementById(id);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const storage={get(key){try{return localStorage.getItem(key);}catch{return null;}},set(key,value){try{localStorage.setItem(key,value);}catch{}}};
 let profile;try{profile=cleanProfile(JSON.parse(storage.get('bbarcade-profile')||'{}'));}catch{profile=cleanProfile();}
+let practiceModel=null,trainedBot=null;
+fetch(new URL('./ml/practice-policy.json?v=9',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Model unavailable');return r.json();}).then(model=>{practiceModel=validatePolicy(model);$('trained-option').disabled=false;$('cpu-policy').value='trained';text('cpu-note','Trained CPU or classic rules. Both run on this device.');}).catch(()=>{text('cpu-note','Trained CPU unavailable. Classic practice still works.');});
 let gameMode='bot',fighterLocked=false;
 let selected=fighter(storage.get('bbarcade-fighter')||'ashfang').id,filter='All',match=null,net=null,lobby=null,busy=false;
 let inputs=[emptyInput(),emptyInput()],overlayKey='',lastEvent=0,lastSnapshot=0,lastFrame=performance.now(),accumulator=0;
@@ -103,18 +106,18 @@ function showSelect(){
 }
 function showBattle(state){
   $('mode-screen').hidden=true;$('stage-screen').hidden=true;document.body.dataset.screen='battle';setSteps('battle');applyStage(state.stageId||chosenStage);
-  match=state;fighterLocked=false;selected=match.fighters[myIndex()].id;overlayKey='';lastEvent=0;awarded=null;inputs=[emptyInput(),emptyInput()];accumulator=0;lastFrame=performance.now();
+  match=state;trainedBot=state.mode==='bot'&&state.botPolicy==='trained'&&practiceModel?createLearnedBot(practiceModel):null;fighterLocked=false;selected=match.fighters[myIndex()].id;overlayKey='';lastEvent=0;awarded=null;inputs=[emptyInput(),emptyInput()];accumulator=0;lastFrame=performance.now();
   $('selection-wait').hidden=true;$('select-screen').hidden=true;$('battle-screen').hidden=false;$('chat-panel').hidden=!net;$('chat-toggle').hidden=!net;
   const names=state.fighters.map(f=>fighter(f.id).name);
-  text('arena-name',getStage(chosenStage).name.toUpperCase());text('battle-mode',net?'PLAYER VS PLAYER':'PLAYER VS BOT');
-  text('battle-room-code',net?`ROOM ${net.code}`:'');text('p1-alias',names[0]+(myIndex()===0?' / YOU':''));text('p2-alias',names[1]+(net?myIndex()===1?' / YOU':'':' / BOT'));
+  text('arena-name',getStage(chosenStage).name.toUpperCase());text('battle-mode',net?'ONLINE MATCH':trainedBot?'TRAINED CPU':'CLASSIC CPU');
+  text('battle-room-code',net?`ROOM ${net.code}`:'');text('p1-alias',names[0]+(myIndex()===0?' / YOU':''));text('p2-alias',names[1]+(net?myIndex()===1?' / YOU':'':trainedBot?' / TRAINED CPU':' / CLASSIC CPU'));
   text('p1-name',names[0].toUpperCase());text('p2-name',names[1].toUpperCase());
   text('battle-tip',net?'Host keeps this tab open and visible.':'E → E: Pushback · Q+E+SPACE: Ultimate');text('last-move','A / D MOVE · W JUMP · S DUCK');renderHud();
 }
 function startBot(){
   if(busy||net||match)return;
   const options=FIGHTERS.filter(f=>f.id!==selected),rival=options[crypto.getRandomValues(new Uint8Array(1))[0]%options.length].id;
-  showBattle(createMatch(selected,rival,{mode:'bot',stageId:chosenStage,difficulty:'rival',seed:crypto.getRandomValues(new Uint32Array(1))[0],matchId:crypto.randomUUID()}));beep(300,.2);
+  showBattle(createMatch(selected,rival,{mode:'bot',stageId:chosenStage,difficulty:'rival',botPolicy:$('cpu-policy').value==='trained'&&practiceModel?'trained':'classic',seed:crypto.getRandomValues(new Uint32Array(1))[0],matchId:crypto.randomUUID()}));beep(300,.2);
 }
 function renderLobby(){
   $('room-strip').hidden=!net;document.body.classList.toggle('in-room',!!net);$('selection-wait').hidden=!fighterLocked;document.querySelectorAll('.selection-shell>section').forEach(el=>el.inert=fighterLocked);
@@ -182,7 +185,7 @@ $('exit-battle').addEventListener('click',requestExit);
 $('confirm-exit').addEventListener('click',()=>{$('exit-dialog').close();leaveRoom();});
 document.querySelector('.brand').addEventListener('click',e=>{if(match||net){e.preventDefault();requestExit();}});
 $('choose-again').addEventListener('click',returnToLobby);
-$('rematch').addEventListener('click',()=>{if(net){returnToLobby();}else{const old=match;showBattle(createMatch(old.fighters[0].id,old.fighters[1].id,{mode:'bot',stageId:old.stageId||chosenStage,difficulty:old.difficulty,seed:crypto.getRandomValues(new Uint32Array(1))[0],matchId:crypto.randomUUID()}));}});
+$('rematch').addEventListener('click',()=>{if(net){returnToLobby();}else{const old=match;showBattle(createMatch(old.fighters[0].id,old.fighters[1].id,{mode:'bot',stageId:old.stageId||chosenStage,difficulty:old.difficulty,botPolicy:old.botPolicy,seed:crypto.getRandomValues(new Uint32Array(1))[0],matchId:crypto.randomUUID()}));}});
 function addChat(index,raw){
   if(!lobby||typeof raw!=='string'||raw.length>180)return false;
   const message=raw.replace(/[\u0000-\u001f\u007f-\u009f]/g,' ').trim();
@@ -257,7 +260,7 @@ function frame(now){
   if(now-lastScene>50){if(cardsDirty&&document.body.dataset.screen==='stage'){paintCards(now);cardsDirty=false;}else if(document.body.dataset.screen==='stage'){paintCard(hoverStage,now);}if(graphics3D){if(document.body.dataset.screen!=='battle')graphics3D.background(document.body.dataset.screen==='stage'?hoverStage:chosenStage,now);}else drawStage($('scene-background').getContext('2d'),document.body.dataset.screen==='stage'?hoverStage:chosenStage,1600,900,reducedMotion?1500:now,!reducedMotion);lastScene=now;}
   const elapsed=Math.min(100,now-lastFrame);lastFrame=now;
   if(match&&!$('battle-screen').hidden){
-    if(!net||net.host){if((!net||net.connected)&&!(!net&&document.querySelector('dialog[open]'))){accumulator+=elapsed;while(accumulator>=1000/FPS){step(match,inputs);accumulator-=1000/FPS;}}else accumulator=0;
+    if(!net||net.host){if((!net||net.connected)&&!(!net&&document.querySelector('dialog[open]'))){accumulator+=elapsed;while(accumulator>=1000/FPS){step(match,inputs,trainedBot);accumulator-=1000/FPS;}}else accumulator=0;
       if(net&&now-lastSnapshot>65){net.broadcast({type:'snapshot',state:match});lastSnapshot=now;}
     }
     if(graphics3D)graphics3D.battle(match,profile.arena,now);else renderArena($('arena'),match,profile.arena,now,match.stageId||chosenStage);renderHud();

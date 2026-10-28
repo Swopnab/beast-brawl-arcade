@@ -2,20 +2,30 @@
 
 **Five worlds. Twelve fighters. Your rules.** A separate, quick-start edition of Beast Brawl. An original 3D arcade fighting game with 12 playable creatures, live two-player rooms, bot opponents, combos, chat, and cosmetic progression.
 
+## Arcade interface and trained practice opponent
+
+The interface now uses locally bundled pixel lettering, gold headings, cyan controls and solid arcade panels, matching CyberSteer's visual direction while keeping Beast Brawl's own creatures and stages. The existing combat rules, online rooms, rewards and touch controls remain.
+
+Choose **Trained CPU** or **Classic CPU** under Practice opponent, then select **CPU Practice**, an arena and a fighter. The trained CPU uses a small offline-trained PyTorch network exported to browser-readable weights. It imitates a scripted coach on synthetic combat states; it is not reinforcement learning or a human-trained opponent. The classic CPU remains available if the model cannot load. No paid AI API or Python server is used during play.
+
+- [Understand the tools and reproduce the ML pipeline](docs/AI-LEARNING-GUIDE.md)
+- [Accurate resume wording and what you should be able to explain](docs/RESUME-NOTES.md)
+- [Measured classifier results](evaluation/practice-policy.json) and [controlled game simulations](evaluation/policy-simulation.json)
+
 ## Play
 
 **[Choose your battleground →](https://swopnab.github.io/beast-brawl-arcade/)**
 
-Choose **Player vs Player** or **Player vs Bot** first. Then choose a background, then click a creature. The chosen creature’s name is your player name. There is no account, nickname field, final setup form, or separate confirmation button.
+Choose **Online Match** or **CPU Practice** first. Then choose a background, then click a creature. The chosen creature’s name is your player name. There is no account, nickname field, final setup form, or separate confirmation button.
 
-- **Bot:** clicking a character starts the five-second countdown immediately, with a random rival and standard bot difficulty.
+- **Bot:** clicking a character starts the five-second countdown immediately, with a random rival and the selected CPU policy.
 - **Online:** the PvP button creates a room automatically. Share the invite shown above the game; friends opening it choose PvP to join directly. A room code can also be entered from the first page. The host chooses the shared background, and both players choose a creature. As soon as both characters are chosen, a synchronized five-second countdown starts automatically. No separate ready/start button is needed.
 - Hover a creature or use arrow keys to preview it on a laptop. Click, tap, or press Enter to choose it and start. Random chooses a character and starts too. The preview rotation and move-list buttons remain available before choosing.
 - Chat is available through the **Chat** button in an online room. Messages stay in the room and are not saved after it ends.
 
 The five free worlds are **Caldera Rift** (volcano), **Azure Falls** (water), **Rainline City** (rain), **Sunscorch Dunes** (sunny desert), and **Verdant Ruins** (jungle). The selected scenery stays behind character selection and becomes the battle arena.
 
-The screens adapt to phone, tablet, laptop, and desktop dimensions without page scrolling. Portrait and landscape layouts keep the twelve creature choices and touch controls accessible. Safe-area spacing keeps controls clear of notches and home indicators. Browsers with touch input show the glass joystick even on larger tablets; keyboard controls remain available. Menus and chat have bounded reading areas.
+The screens adapt to phone, tablet, laptop, and desktop dimensions without page scrolling. Portrait and landscape layouts keep the twelve creature choices and touch controls accessible. Safe-area spacing keeps controls clear of notches and home indicators. Browsers with touch input show the touch joystick even on larger tablets; keyboard controls remain available. Menus and chat have bounded reading areas.
 
 All 12 characters, names, creature designs, backgrounds, and move sets were created for this game. Each creature has its own anatomy, proportions, size, and limb animation. The 3D edition uses original procedural low-poly models, layered geometry, lighting, shadows, animated weather, and 3D combat effects. Drag the selected creature or use the rotation buttons to inspect it. No official Pokémon, Street Fighter characters, ripped sprites, or third-party game artwork are used. The five stage backgrounds, roster portraits, selected creature, and battles render in real 3D using bundled Three.js 0.186.1. Fighting follows the same side-view rules, with a camera that follows and moves closer as fighters approach. It is a 3D presentation with side-view movement. Browsers without WebGL 2 automatically use the previous illustrated Canvas renderer.
 
@@ -27,27 +37,27 @@ Elemental effects include fireballs with ember trails, pressure-cannon water jet
 
 ## Controls
 
-| Command | Action |
-| --- | --- |
-| A / D | Move left / right |
-| W | Jump |
-| S | Duck; lower your hurtbox to evade Q shots (no passive block) |
-| Q | Ranged projectile; exactly one quarter of basic E damage |
-| E | Fast close-combat strike; 22-frame recovery |
-| R | Timed deflect: 8 frames to parry melee or reflect a projectile; 40-frame cooldown |
-| Q + E + Space | Press together at 100% energy for your creature-specific ultimate (Space alone or the touch ultimate button also works) |
-| S + E | Low sweep |
-| W + E | Rising melee |
-| E while airborne | Diving melee |
-| A or D + E | Moving melee |
-| E → E | Two consecutive landed melee hits within 1.5 seconds push your opponent away |
-| E → E → E | Skybreaker: launching melee finisher |
-| E → E → S+E | Low Finish: ducking combo sweep |
-| Successful R → E | Counter within 0.75 seconds; 150% basic melee damage |
+| Command          | Action                                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| A / D            | Move left / right                                                                                                       |
+| W                | Jump                                                                                                                    |
+| S                | Duck; lower your hurtbox to evade Q shots (no passive block)                                                            |
+| Q                | Ranged projectile; exactly one quarter of basic E damage                                                                |
+| E                | Fast close-combat strike; 22-frame recovery                                                                             |
+| R                | Timed deflect: 8 frames to parry melee or reflect a projectile; 40-frame cooldown                                       |
+| Q + E + Space    | Press together at 100% energy for your creature-specific ultimate (Space alone or the touch ultimate button also works) |
+| S + E            | Low sweep                                                                                                               |
+| W + E            | Rising melee                                                                                                            |
+| E while airborne | Diving melee                                                                                                            |
+| A or D + E       | Moving melee                                                                                                            |
+| E → E            | Two consecutive landed melee hits within 1.5 seconds push your opponent away                                            |
+| E → E → E        | Skybreaker: launching melee finisher                                                                                    |
+| E → E → S+E      | Low Finish: ducking combo sweep                                                                                         |
+| Successful R → E | Counter within 0.75 seconds; 150% basic melee damage                                                                    |
 
 Each creature has **12 named move commands**. Open **Your move list** to see the selected creature’s exact attack names and descriptions. Combos must be entered within 2.5 seconds; time each input as the preceding animation finishes. The last quarter-second of an animation accepts buffered inputs. Pressing every key simultaneously is not a successful combo.
 
-Phones, iPads, and other touchscreens have a translucent glass thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to duck; diagonals combine movement with jumping or ducking. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
+Phones, iPads, and other touchscreens have a thumb joystick and separate attack buttons with multi-touch support. Drag left/right to move, up to jump, and down to duck; diagonals combine movement with jumping or ducking. Releasing, canceling a touch, or switching away resets movement. Landscape orientation gives the arena more room.
 
 ## Match rules
 
@@ -61,39 +71,39 @@ Energy builds through combat and slowly over time. Space consumes the full meter
 
 ## The original roster
 
-| Element | Creatures |
-| --- | --- |
-| Ember | Ashfang — winged dragon; Kilnback — four-legged furnace tortoise |
-| Tide | Reefclaw — broad, six-legged crab; Inkveil — six walking tentacles |
-| Volt | Zipcat — tiny four-legged sprinter; Boltstag — tall four-legged stag |
-| Wild | Thornox — massive four-legged root beast; Petalmoth — floating wings |
-| Void | Hexeye — floating bell, one eye and eight tendrils; Nullwyrm — floating cosmic serpent |
-| Frost | Glaciop — small two-legged hopper; Crysteel — giant two-legged crystal titan |
+| Element | Creatures                                                                              |
+| ------- | -------------------------------------------------------------------------------------- |
+| Ember   | Ashfang — winged dragon; Kilnback — four-legged furnace tortoise                       |
+| Tide    | Reefclaw — broad, six-legged crab; Inkveil — six walking tentacles                     |
+| Volt    | Zipcat — tiny four-legged sprinter; Boltstag — tall four-legged stag                   |
+| Wild    | Thornox — massive four-legged root beast; Petalmoth — floating wings                   |
+| Void    | Hexeye — floating bell, one eye and eight tendrils; Nullwyrm — floating cosmic serpent |
+| Frost   | Glaciop — small two-legged hopper; Crysteel — giant two-legged crystal titan           |
 
-| Creature | Space ultimate | Behavior |
-| --- | --- | --- |
-| Ashfang | Dragonfall | Forward aerial dive and launch |
-| Kilnback | Core Meltdown | Armored radial furnace eruption |
-| Reefclaw | Reef Wrecker | Point-blank pincer grab |
-| Inkveil | Ocean Eclipse | Three tentacle strikes |
-| Zipcat | Nine Lives Overdrive | Five advancing electric hits |
-| Boltstag | Thunder Coronation | Rising antler launch |
-| Thornox | Forest Stampede | Armored charging horn strike |
-| Petalmoth | Bloomstorm | Two radial petal pulses |
-| Hexeye | Soul Parade | Three pulses with health siphon |
-| Nullwyrm | Singularity | Nearby gravity pull then implosion |
-| Glaciop | Avalanche Ballet | Three advancing aerial kicks |
-| Crysteel | Absolute Zero | Two crystal hits with a brief freeze |
+| Creature  | Space ultimate       | Behavior                             |
+| --------- | -------------------- | ------------------------------------ |
+| Ashfang   | Dragonfall           | Forward aerial dive and launch       |
+| Kilnback  | Core Meltdown        | Armored radial furnace eruption      |
+| Reefclaw  | Reef Wrecker         | Point-blank pincer grab              |
+| Inkveil   | Ocean Eclipse        | Three tentacle strikes               |
+| Zipcat    | Nine Lives Overdrive | Five advancing electric hits         |
+| Boltstag  | Thunder Coronation   | Rising antler launch                 |
+| Thornox   | Forest Stampede      | Armored charging horn strike         |
+| Petalmoth | Bloomstorm           | Two radial petal pulses              |
+| Hexeye    | Soul Parade          | Three pulses with health siphon      |
+| Nullwyrm  | Singularity          | Nearby gravity pull then implosion   |
+| Glaciop   | Avalanche Ballet     | Three advancing aerial kicks         |
+| Crysteel  | Absolute Zero        | Two crystal hits with a brief freeze |
 
 Elements identify visual style and move sets; there is no hidden type-advantage system.
 
 ## Rewards
 
-| Result | XP | Shards |
-| --- | ---: | ---: |
-| Win | 120 | 50 |
-| Draw | 65 | 25 |
-| Loss | 45 | 15 |
+| Result |  XP | Shards |
+| ------ | --: | -----: |
+| Win    | 120 |     50 |
+| Draw   |  65 |     25 |
+| Loss   |  45 |     15 |
 
 Completed bot and online matches both count. Leaving early earns nothing. Earn five titles through XP, and spend shards on **Forge Glow**, **Jade Glow**, and **Storm Glow** lighting palettes. Arcade Lime is free. These tint the arena floor effect; the five stage backgrounds remain free. All 12 creatures remain available from the start, with no paid boosts.
 
@@ -101,14 +111,17 @@ Rewards, titles, and arena purchases are stored in this browser’s local storag
 
 ## Local development
 
-Requires Node.js 18+ for checks and Python 3 for the local server. No dependency installation or build is necessary.
+Requires Node.js 22+ for development checks and Python 3 for the local server. Playing the static game requires no build or runtime package installation. Install development-only browser test packages with `npm ci`.
 
 ```sh
 npm run dev
 # http://127.0.0.1:4320
 
+npm ci
+npx playwright install chromium --only-shell
 npm run check
 npm test
+npm run test:browser
 ```
 
 The automated suite verifies all 12 model transforms and poses, five animated 3D worlds, coordinate alignment, reduced motion, joystick dead zones and radial bounds, stage persistence, all 12 unique ultimates, the exact ranged/melee damage ratio, ducking, timed parries, projectile ownership on reflection, counter expiry, melee-focused bot behavior, the five-second countdown, two-player readiness, combat damage, defense, aerial/directional moves, all three combo routes, energy costs, match completion, bot behavior, and reward/purchase accounting.
