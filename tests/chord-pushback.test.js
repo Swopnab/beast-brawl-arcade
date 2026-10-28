@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createAttackKeys} from '../attack-keys.js';
-import {createMatch,queueAction,step,emptyInput,meleeDamage} from '../combat.js';
+import {createMatch,queueAction,step,emptyInput,meleeDamage,damageAgainst} from '../combat.js';
 import {FIGHTERS} from '../fighters.js';
 import {makeCreature,animateCreature} from '../creatures3d.js';
 function keys(full=true,emit){const fired=[],timers=new Map();let id=0;const k=createAttackKeys({isFull:()=>full,emit:a=>{fired.push(a);emit?.(a);},setTimer:fn=>{timers.set(++id,fn);return id;},clearTimer:id=>timers.delete(id)});return {k,fired,flush(){const tasks=[...timers.values()];timers.clear();tasks.forEach(fn=>fn());}};}
@@ -24,7 +24,7 @@ test('a new chord after releasing all three keys fires only once and spends one 
   const again=keys();for(let n=0;n<2;n++){for(const key of orders[0])again.k.down(key);for(const key of orders[0])again.k.up(key);}again.flush();assert.deepEqual(again.fired,['space','space']);
 });
 test('two naturally spaced close-combat hits push either opponent back without extra damage',()=>{
-  for(const seat of [0,1]){const s=duel(),f=s.fighters[seat],d=s.fighters[1-seat],start=d.x,hp=d.hp;queueAction(s,seat,'e');advance(s,22);queueAction(s,seat,'e');advance(s,22);assert.equal(hp-d.hp,meleeDamage(f.id)*2);assert.ok(Math.abs(d.x-start)>70);assert.equal(s.events.filter(e=>e.type==='pushback').length,1);}
+  for(const seat of [0,1]){const s=duel(),f=s.fighters[seat],d=s.fighters[1-seat],start=d.x,hp=d.hp;queueAction(s,seat,'e');advance(s,22);queueAction(s,seat,'e');advance(s,22);assert.equal(hp-d.hp,damageAgainst(meleeDamage(f.id),FIGHTERS.find(x=>x.id===f.id).element,d.id)*2);assert.ok(Math.abs(d.x-start)>70);assert.equal(s.events.filter(e=>e.type==='pushback').length,1);}
 });
 test('missed melee attacks, ranged attacks, and expired pairs cannot award pushback',()=>{
   for(const reset of ['miss','ranged','expired']){const s=duel();queueAction(s,0,'e');advance(s,22);if(reset==='miss'){s.fighters[1].x=1050;queueAction(s,0,'e');advance(s,22);}if(reset==='ranged'){queueAction(s,0,'q');advance(s,44);}if(reset==='expired')advance(s,100);s.fighters[1].x=590;queueAction(s,0,'e');advance(s,22);assert.equal(s.events.some(e=>e.type==='pushback'),false,reset);}

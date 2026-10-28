@@ -6,11 +6,11 @@ This project has two separate stories: an arcade game and a small machine-learni
 
 | Name     | What it does here                                                | What you should be able to explain                                                                                       |
 | -------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Three.js | Draws the existing 3D fighters and arenas in the browser.        | A scene contains models, a camera and lights. The renderer turns them into pixels. It is graphics, not machine learning. |
+| Three.js | Rendered the previous 3D edition; the current pixel edition uses Canvas.        | A scene contains models, a camera and lights. The renderer turns them into pixels. It is graphics, not machine learning. |
 | PeerJS   | Handles room setup and connection events for the two players.    | The host runs combat; the guest sends input. Disconnecting pauses the room; a saved seat token allows reconnection.      |
 | WebRTC   | Carries game data directly between the two browsers after setup. | It transports messages. It does not decide damage, control the CPU, or train a model.                                    |
 
-You do not need to foreground networking libraries on an AI/ML resume. They remain in the code because removing them would break multiplayer. A plain description such as “browser-to-browser multiplayer with reconnectable rooms” is accurate, provided you can explain the host/guest design.
+You do not need to foreground networking libraries on an AI/ML resume. PeerJS and WebRTC remain because they provide multiplayer. Three.js is retained only in legacy source, not loaded by the current pixel edition. A plain description such as “browser-to-browser multiplayer with reconnectable rooms” is accurate, provided you can explain the host/guest design.
 
 ## What the new trained opponent actually does
 
@@ -76,3 +76,7 @@ The action mask prevents unavailable ultimates, airborne duck/jump commands and 
 - Why is the simpler classic bot still useful?
 
 Running AI-generated code once does not establish proficiency. Rerun it, change it, inspect a failure and explain the tradeoffs. That is the knowledge this project can help you build.
+
+## Team-battle update
+
+The current edition has attack/defense/speed budgets, elemental damage and teams of up to three. The trained policy still controls only the active CPU fighter. Reserve selection uses the type chart directly; it is not learned. The original classifier metric describes the original synthetic dataset, not the new team strategy. `evaluation/policy-simulation.json` has been rerun on the current combat rules, and `evaluation/roster-balance.json` contains symmetric scripted roster checks. Neither report measures human win rates.

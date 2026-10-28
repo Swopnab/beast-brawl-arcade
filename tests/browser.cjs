@@ -40,8 +40,10 @@ async function shot(p, name) {
         viewport: { width, height },
         hasTouch: true,
       });
+      await context.route('**/app.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:await response.text()+`\nwindow.__test={state:()=>match,knockout:()=>{match.fighters[0].hp=0;}};`});});
       const p = await context.newPage(),
-        errors = [];
+        errors = [],requests=[];
+      p.on('request',r=>requests.push(r.url()));
       p.on("pageerror", (e) => errors.push(e.message));
       await p.goto(site.url);
       await p.waitForFunction(
@@ -71,6 +73,9 @@ async function shot(p, name) {
       }
       await shot(p, `${width}-fighter`);
       await p.locator('[data-id="ashfang"]').click();
+      await p.locator('[data-id="reefclaw"]').click();
+      await p.locator('[data-id="glaciop"]').click();
+      await p.locator("#lock-team").click();
       await p.locator("#battle-screen").waitFor();
       assert.match(await p.locator("#battle-mode").textContent(), /TRAINED CPU/);
       await fits(p, "#arena", width, height);
@@ -78,6 +83,18 @@ async function shot(p, name) {
       for (const a of ["q", "e", "r", "space"])
         await fits(p, `[data-action="${a}"]`, width, height);
       await shot(p, `${width}-battle`);
+      await p.waitForFunction(()=>window.__test.state()?.phase==='fight');
+      await p.evaluate(()=>window.__test.knockout());
+      await p.locator('[data-replace="reefclaw"]').waitFor();
+      await fits(p,'[data-replace="reefclaw"]',width,height);
+      await fits(p,'[data-replace="glaciop"]',width,height);
+      await shot(p,`${width}-reserve`);
+      await p.locator('[data-replace="glaciop"]').click();
+      await p.waitForFunction(()=>window.__test.state().fighters[0].id==='glaciop');
+      await p.waitForFunction(()=>document.querySelector('#p1-name').textContent==='GLACIOP');
+      assert.equal(requests.some(u=>/three|graphics3d|creatures3d|worlds3d/.test(u)),false);
+      assert.equal(await p.locator('#arena').evaluate(c=>c.getContext('2d').imageSmoothingEnabled),false);
+      if(width===390){await p.setViewportSize({width:844,height:390});await fits(p,'#arena',844,390);assert.equal(await p.evaluate(()=>window.__test.state().fighters[0].id),'glaciop');await p.setViewportSize({width,height});}
       await p.locator("#battle-moves").click();
       assert(await p.locator("#moves-dialog").isVisible());
       await p.locator('[data-close="moves-dialog"]').click();
@@ -92,10 +109,10 @@ async function shot(p, name) {
       assert.deepEqual(errors, []);
       await context.close();
       console.log(
-        `PASS arcade setup, 5 stages, 12 fighters, trained CPU, dialogs and touch controls: ${width}x${height}`,
+        `PASS arcade setup, 5 stages, 12 fighters, trained CPU, reserve choices, dialogs and touch controls: ${width}x${height}`,
       );
     }
-    // Exercise a real trained fight and the classic/model-missing fallbacks without WebGL.
+    // Exercise a real trained fight and model-missing classic fallback; WebGL is not needed.
     const c = await browser.newContext({
       viewport: { width: 1100, height: 800 },
     });
@@ -116,6 +133,9 @@ async function shot(p, name) {
     await p.locator("#mode-bot").click();
     await p.locator('[data-stage="rain"]').click();
     await p.locator('[data-id="ashfang"]').click();
+      await p.locator('[data-id="reefclaw"]').click();
+      await p.locator('[data-id="glaciop"]').click();
+      await p.locator("#lock-team").click();
     await p.waitForFunction(
       () => {
         const e = document.querySelector("#p1-hp");
@@ -141,13 +161,14 @@ async function shot(p, name) {
     await offline.locator("#mode-bot").click();
     await offline.locator('[data-stage="volcano"]').click();
     await offline.locator('[data-id="zipcat"]').click();
+    await offline.locator("#lock-team").click();
     assert.match(
       await offline.locator("#battle-mode").textContent(),
       /CLASSIC CPU/,
     );
     await offline.close();
     console.log(
-      "PASS trained opponent inflicts damage in browser, Canvas fallback, and missing-model classic fallback",
+      "PASS trained opponent inflicts damage in browser, 2D pixel rendering, and missing-model classic fallback",
     );
   } finally {
     await browser.close();

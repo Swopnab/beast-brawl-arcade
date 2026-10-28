@@ -1,6 +1,6 @@
 // A small exported PyTorch network. Training stays offline; inference stays in the browser.
-import { fighter } from "./fighters.js?v=9";
-import { emptyInput, queueAction } from "./combat.js?v=9";
+import { fighter } from "./fighters.js?v=10";
+import { emptyInput, queueAction } from "./combat.js?v=10";
 export const FEATURES = [
   "distance",
   "direction",
@@ -127,11 +127,11 @@ export function createLearnedBot(model) {
   validatePolicy(model);
   let held = emptyInput(),
     last = -Infinity,
-    lastMatch = null;
+    lastMatch = null, lastPair = null;
   return (s) => {
-    if (s.id !== lastMatch || s.frame < last) {
+    if (s.id !== lastMatch || s.frame < last || lastPair !== s.fighters.map(f=>f.id).join()) {
       last = -Infinity;
-      lastMatch = s.id;
+      lastMatch = s.id;lastPair = s.fighters.map(f=>f.id).join();
       held = emptyInput();
     }
     if (s.phase !== "fight") return emptyInput();

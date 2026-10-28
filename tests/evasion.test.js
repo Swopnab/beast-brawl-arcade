@@ -17,5 +17,5 @@ test('ground waves and fireballs hit grounded rivals and pass below a correctly 
 test('movement and attack recovery use the faster arcade pace at a fixed 60 steps',()=>{
   const s=duel(),x=s.fighters[0].x;step(s,[{left:true},emptyInput()]);assert.ok(Math.abs((x-s.fighters[0].x)-fighter('ashfang').speed*PACE.run)<1e-9);
   const hit=duel();queueAction(hit,0,'e');advance(hit,PACE.melee.duration);assert.equal(hit.fighters[0].attack,null);assert.ok(PACE.melee.duration<=22);assert.ok(PACE.ranged.duration>=PACE.melee.duration*2);
-  assert.ok(hurtbox({id:'crysteel',y:0}).top<hurtbox({id:'zipcat',y:0}).top);
+  assert.deepEqual(hurtbox({id:'crysteel',y:0}),hurtbox({id:'zipcat',y:0}));
 });

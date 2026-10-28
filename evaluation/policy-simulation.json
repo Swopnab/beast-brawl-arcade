@@ -3,13 +3,13 @@
   "summary": {
     "classic": {
       "matches": 12,
-      "cpu_wins": 3,
+      "cpu_wins": 6,
       "draws": 0,
       "completed": 12
     },
     "trained": {
       "matches": 12,
-      "cpu_wins": 6,
+      "cpu_wins": 7,
       "draws": 0,
       "completed": 12
     }
@@ -21,7 +21,7 @@
       "player": "ashfang",
       "cpu": "boltstag",
       "winner": 0,
-      "ticks": 2419,
+      "ticks": 1867,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -30,20 +30,20 @@
       "seed": 1001,
       "player": "kilnback",
       "cpu": "thornox",
-      "winner": 1,
-      "ticks": 3207,
+      "winner": 0,
+      "ticks": 1496,
       "finished": true,
-      "cpu_round_wins": 2
+      "cpu_round_wins": 0
     },
     {
       "policy": "classic",
       "seed": 1002,
       "player": "reefclaw",
       "cpu": "petalmoth",
-      "winner": 0,
-      "ticks": 1830,
+      "winner": 1,
+      "ticks": 2122,
       "finished": true,
-      "cpu_round_wins": 0
+      "cpu_round_wins": 2
     },
     {
       "policy": "classic",
@@ -51,7 +51,7 @@
       "player": "inkveil",
       "cpu": "hexeye",
       "winner": 0,
-      "ticks": 1958,
+      "ticks": 1484,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -61,7 +61,7 @@
       "player": "zipcat",
       "cpu": "nullwyrm",
       "winner": 1,
-      "ticks": 3108,
+      "ticks": 1813,
       "finished": true,
       "cpu_round_wins": 2
     },
@@ -71,7 +71,7 @@
       "player": "boltstag",
       "cpu": "glaciop",
       "winner": 0,
-      "ticks": 1643,
+      "ticks": 1382,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -80,10 +80,10 @@
       "seed": 1006,
       "player": "thornox",
       "cpu": "crysteel",
-      "winner": 0,
-      "ticks": 1846,
+      "winner": 1,
+      "ticks": 2615,
       "finished": true,
-      "cpu_round_wins": 0
+      "cpu_round_wins": 2
     },
     {
       "policy": "classic",
@@ -91,7 +91,7 @@
       "player": "petalmoth",
       "cpu": "ashfang",
       "winner": 1,
-      "ticks": 3311,
+      "ticks": 1355,
       "finished": true,
       "cpu_round_wins": 2
     },
@@ -101,7 +101,7 @@
       "player": "hexeye",
       "cpu": "kilnback",
       "winner": 0,
-      "ticks": 2379,
+      "ticks": 1491,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -110,10 +110,10 @@
       "seed": 1009,
       "player": "nullwyrm",
       "cpu": "reefclaw",
-      "winner": 0,
-      "ticks": 3148,
+      "winner": 1,
+      "ticks": 1896,
       "finished": true,
-      "cpu_round_wins": 1
+      "cpu_round_wins": 2
     },
     {
       "policy": "classic",
@@ -121,7 +121,7 @@
       "player": "glaciop",
       "cpu": "inkveil",
       "winner": 0,
-      "ticks": 2110,
+      "ticks": 1987,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -130,30 +130,30 @@
       "seed": 1011,
       "player": "crysteel",
       "cpu": "zipcat",
-      "winner": 0,
-      "ticks": 1986,
+      "winner": 1,
+      "ticks": 1890,
       "finished": true,
-      "cpu_round_wins": 0
+      "cpu_round_wins": 2
     },
     {
       "policy": "trained",
       "seed": 1000,
       "player": "ashfang",
       "cpu": "boltstag",
-      "winner": 0,
-      "ticks": 3062,
+      "winner": 1,
+      "ticks": 2616,
       "finished": true,
-      "cpu_round_wins": 1
+      "cpu_round_wins": 2
     },
     {
       "policy": "trained",
       "seed": 1001,
       "player": "kilnback",
       "cpu": "thornox",
-      "winner": 1,
-      "ticks": 3112,
+      "winner": 0,
+      "ticks": 4630,
       "finished": true,
-      "cpu_round_wins": 2
+      "cpu_round_wins": 0
     },
     {
       "policy": "trained",
@@ -161,9 +161,9 @@
       "player": "reefclaw",
       "cpu": "petalmoth",
       "winner": 0,
-      "ticks": 5798,
+      "ticks": 5078,
       "finished": true,
-      "cpu_round_wins": 1
+      "cpu_round_wins": 0
     },
     {
       "policy": "trained",
@@ -171,7 +171,7 @@
       "player": "inkveil",
       "cpu": "hexeye",
       "winner": 0,
-      "ticks": 2152,
+      "ticks": 1790,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -181,7 +181,7 @@
       "player": "zipcat",
       "cpu": "nullwyrm",
       "winner": 1,
-      "ticks": 2504,
+      "ticks": 1745,
       "finished": true,
       "cpu_round_wins": 2
     },
@@ -191,7 +191,7 @@
       "player": "boltstag",
       "cpu": "glaciop",
       "winner": 0,
-      "ticks": 1369,
+      "ticks": 1953,
       "finished": true,
       "cpu_round_wins": 0
     },
@@ -200,10 +200,10 @@
       "seed": 1006,
       "player": "thornox",
       "cpu": "crysteel",
-      "winner": 0,
-      "ticks": 3083,
+      "winner": 1,
+      "ticks": 4822,
       "finished": true,
-      "cpu_round_wins": 0
+      "cpu_round_wins": 2
     },
     {
       "policy": "trained",
@@ -211,7 +211,7 @@
       "player": "petalmoth",
       "cpu": "ashfang",
       "winner": 1,
-      "ticks": 4632,
+      "ticks": 1636,
       "finished": true,
       "cpu_round_wins": 2
     },
@@ -220,10 +220,10 @@
       "seed": 1008,
       "player": "hexeye",
       "cpu": "kilnback",
-      "winner": 1,
-      "ticks": 4161,
+      "winner": 0,
+      "ticks": 1608,
       "finished": true,
-      "cpu_round_wins": 2
+      "cpu_round_wins": 0
     },
     {
       "policy": "trained",
@@ -231,7 +231,7 @@
       "player": "nullwyrm",
       "cpu": "reefclaw",
       "winner": 1,
-      "ticks": 2328,
+      "ticks": 1912,
       "finished": true,
       "cpu_round_wins": 2
     },
@@ -240,10 +240,10 @@
       "seed": 1010,
       "player": "glaciop",
       "cpu": "inkveil",
-      "winner": 0,
-      "ticks": 5598,
+      "winner": 1,
+      "ticks": 3432,
       "finished": true,
-      "cpu_round_wins": 1
+      "cpu_round_wins": 2
     },
     {
       "policy": "trained",
@@ -251,7 +251,7 @@
       "player": "crysteel",
       "cpu": "zipcat",
       "winner": 1,
-      "ticks": 5976,
+      "ticks": 3273,
       "finished": true,
       "cpu_round_wins": 2
     }
